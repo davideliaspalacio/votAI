@@ -15,7 +15,7 @@ import { api } from "@/lib/api"
 import { mockCandidates } from "@/lib/mock/candidates"
 import type { MatchResult } from "@/types/domain"
 import { Header } from "@/components/common/Header"
-import { BarChart3, RefreshCw, GitCompare } from "lucide-react"
+import { BarChart3, RefreshCw, GitCompare, User } from "lucide-react"
 import { showPublicStats } from "@/lib/utils"
 
 export default function ResultsPage() {
@@ -72,6 +72,37 @@ export default function ResultsPage() {
       {/* Sections 2-4 appear after reveal */}
       {revealed && (
         <div className="flex flex-1 flex-col space-y-16 pb-12">
+          {/* Section 1.5: Top candidate hero card */}
+          {topCandidate && (
+            <section className="mx-auto max-w-2xl px-4 text-center">
+              <div
+                className="inline-flex flex-col items-center gap-3 rounded-brutal border-2 px-10 py-8"
+                style={{
+                  borderColor: topCandidate.color,
+                  boxShadow: `4px 4px 0px 0px ${topCandidate.color}`,
+                }}
+              >
+                <div
+                  className="flex size-20 items-center justify-center rounded-full"
+                  style={{ backgroundColor: topCandidate.color + "20" }}
+                >
+                  <User className="size-10" style={{ color: topCandidate.color }} />
+                </div>
+                <h2 className="font-display text-2xl font-bold text-text">
+                  {topCandidate.name}
+                </h2>
+                <p className="text-sm text-text-muted">{topCandidate.party}</p>
+                <div className="font-display text-4xl font-bold text-primary">
+                  {topResult.score}%
+                </div>
+                <p className="text-xs text-text-subtle">de afinidad programática</p>
+              </div>
+              <p className="mt-4 text-sm text-text-muted">
+                {topResult.summary}
+              </p>
+            </section>
+          )}
+
           {/* Section 2: Full Ranking */}
           <RankingList results={result.results} />
 

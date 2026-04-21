@@ -164,7 +164,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   }, [axisIndex, totalAxes, onRevealComplete])
 
   return (
-    <div className="flex min-h-[85vh] flex-col items-center justify-center px-4 py-12">
+    <div className={`flex flex-col items-center justify-center px-4 py-12 ${phase === "done" ? "" : "min-h-[85vh]"}`}>
       <AnimatePresence mode="wait">
         {/* Phase 1: Show initial preference */}
         {phase === "initial" && !specialPreference && initialCandidate && (
