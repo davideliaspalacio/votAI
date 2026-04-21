@@ -14,6 +14,19 @@ interface RevealProps {
   onRevealComplete: () => void
 }
 
+interface AxisSlide {
+  axis: string
+  userStance: string
+  candidateId: string
+  candidateName: string
+  candidateColor: string
+  candidateParty: string
+  candidateStance: string
+  quote: string
+  programPage?: number
+  isTopCandidate: boolean
+}
+
 type Phase = "initial" | "transition" | "reveal" | "axes" | "done"
 
 export function Reveal({ result, onRevealComplete }: RevealProps) {
@@ -34,9 +47,42 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     result.initial_preference === "blank" ||
     result.initial_preference === "na"
 
-  const axes = topResult.byAxis ?? []
-  const currentAxis = axes[axisIndex]
-  const totalAxes = axes.length
+  // Para cada eje, buscar el candidato con mayor coincidencia entre el top 3
+  const axisSlides: AxisSlide[] = (() => {
+    const top3 = result.results.slice(0, 3)
+    const axisMap = new Map<string, AxisSlide>()
+
+    for (const candidateResult of top3) {
+      const candidate = mockCandidates.find((c) => c.id === candidateResult.candidateId)
+      if (!candidate || !candidateResult.byAxis) continue
+
+      for (const axisData of candidateResult.byAxis) {
+        const existing = axisMap.get(axisData.axis)
+        // Si no hay entrada para este eje, o si este candidato tiene mejor score
+        if (!existing) {
+          axisMap.set(axisData.axis, {
+            axis: axisData.axis,
+            userStance: axisData.userStance,
+            candidateId: candidate.id,
+            candidateName: candidate.name,
+            candidateColor: candidate.color,
+            candidateParty: candidate.party,
+            candidateStance: axisData.candidateStance,
+            quote: axisData.quote,
+            programPage: axisData.programPage,
+            isTopCandidate: candidate.id === topResult.candidateId,
+          })
+        }
+        // Mantener el del candidato con mejor score general si ya existe
+        // (el top3 ya viene ordenado por score, así que el primero que encontremos es el mejor)
+      }
+    }
+
+    return Array.from(axisMap.values())
+  })()
+
+  const currentSlide = axisSlides[axisIndex]
+  const totalAxes = axisSlides.length
 
   // Phase transitions: initial -> transition -> reveal
   useEffect(() => {
@@ -87,14 +133,14 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   }, [phase, autoPlay, totalAxes, onRevealComplete])
 
   const handleStartAxes = useCallback(() => {
-    if (axes.length > 0) {
+    if (axisSlides.length > 0) {
       setPhase("axes")
       setAxisIndex(0)
     } else {
       setPhase("done")
       onRevealComplete()
     }
-  }, [axes.length, onRevealComplete])
+  }, [axisSlides.length, onRevealComplete])
 
   const handleSkip = useCallback(() => {
     setAutoPlay(false)
@@ -275,7 +321,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
         )}
 
         {/* Phase 4: Axis slideshow */}
-        {phase === "axes" && currentAxis && topCandidate && (
+        {phase === "axes" && currentSlide && (
           <motion.div
             key={`axis-${axisIndex}`}
             initial={{ opacity: 0, x: 60 }}
@@ -303,8 +349,13 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
             {/* Axis name */}
             <div className="mb-6 text-center">
               <span className="inline-block rounded-full bg-primary/10 px-4 py-1.5 font-display text-sm font-bold text-primary">
-                {AXIS_LABELS[currentAxis.axis as keyof typeof AXIS_LABELS] ?? currentAxis.axis}
+                {AXIS_LABELS[currentSlide.axis as keyof typeof AXIS_LABELS] ?? currentSlide.axis}
               </span>
+              {!currentSlide.isTopCandidate && (
+                <p className="mt-2 text-xs text-accent">
+                  En este eje coincides más con otro candidato
+                </p>
+              )}
             </div>
 
             {/* Comparison cards */}
@@ -315,7 +366,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                   Tu postura
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-text">
-                  {currentAxis.userStance}
+                  {currentSlide.userStance}
                 </p>
               </div>
 
@@ -330,28 +381,39 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
               <div
                 className="rounded-brutal border-2 p-4"
                 style={{
-                  borderColor: topCandidate.color + "50",
-                  backgroundColor: topCandidate.color + "08",
+                  borderColor: currentSlide.candidateColor + "50",
+                  backgroundColor: currentSlide.candidateColor + "08",
                 }}
               >
-                <p
-                  className="text-xs font-bold uppercase tracking-wide"
-                  style={{ color: topCandidate.color }}
-                >
-                  {topCandidate.name}
-                </p>
+                <div className="flex items-center gap-2">
+                  <div
+                    className="flex size-6 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: currentSlide.candidateColor + "20" }}
+                  >
+                    <User className="size-3" style={{ color: currentSlide.candidateColor }} />
+                  </div>
+                  <p
+                    className="text-xs font-bold uppercase tracking-wide"
+                    style={{ color: currentSlide.candidateColor }}
+                  >
+                    {currentSlide.candidateName}
+                  </p>
+                  <span className="text-[10px] text-text-subtle">
+                    {currentSlide.candidateParty}
+                  </span>
+                </div>
                 <p className="mt-2 text-sm leading-relaxed text-text">
-                  {currentAxis.candidateStance}
+                  {currentSlide.candidateStance}
                 </p>
 
                 {/* Quote */}
-                {currentAxis.quote && (
+                {currentSlide.quote && (
                   <blockquote className="mt-3 border-l-2 border-text-subtle/30 pl-3 text-xs italic text-text-muted">
-                    &ldquo;{currentAxis.quote}&rdquo;
-                    {currentAxis.programPage && (
+                    &ldquo;{currentSlide.quote}&rdquo;
+                    {currentSlide.programPage && (
                       <span className="ml-1.5 not-italic text-text-subtle">
                         <FileText className="mr-0.5 inline size-3" />
-                        Pág. {currentAxis.programPage}
+                        Pág. {currentSlide.programPage}
                       </span>
                     )}
                   </blockquote>
@@ -372,7 +434,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
 
               {/* Dots */}
               <div className="flex gap-1.5">
-                {axes.map((_, i) => (
+                {axisSlides.map((_, i) => (
                   <button
                     key={i}
                     onClick={() => {
