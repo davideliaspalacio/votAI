@@ -30,12 +30,7 @@ function getAffinityMessage(score: number): string {
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
     </svg>
   )
@@ -43,15 +38,27 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 function XIcon({ className }: { className?: string }) {
   return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="currentColor"
-      className={className}
-      aria-hidden="true"
-    >
+    <svg viewBox="0 0 24 24" fill="currentColor" className={className} aria-hidden="true">
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
     </svg>
   )
+}
+
+function drawRoundedRect(
+  ctx: CanvasRenderingContext2D,
+  x: number, y: number, w: number, h: number, r: number,
+) {
+  ctx.beginPath()
+  ctx.moveTo(x + r, y)
+  ctx.lineTo(x + w - r, y)
+  ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+  ctx.lineTo(x + w, y + h - r)
+  ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+  ctx.lineTo(x + r, y + h)
+  ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+  ctx.lineTo(x, y + r)
+  ctx.quadraticCurveTo(x, y, x + r, y)
+  ctx.closePath()
 }
 
 export function ShareButton({
@@ -81,19 +88,22 @@ export function ShareButton({
   const generateImage = useCallback(async (): Promise<Blob | null> => {
     if (!top3 || top3.length === 0) return null
     try {
-      const W = 600
-      const H = 480
+      // Formato story-friendly (1080x1350 a escala 1x, renderizado a 2x)
+      const W = 540
+      const H = 680
+      const scale = 2
+      const pad = 32
       const canvas = document.createElement("canvas")
-      canvas.width = W * 2
-      canvas.height = H * 2
+      canvas.width = W * scale
+      canvas.height = H * scale
       const ctx = canvas.getContext("2d")
       if (!ctx) return null
-      ctx.scale(2, 2)
+      ctx.scale(scale, scale)
 
-      // Fondo
+      // Fondo con gradiente
       const bg = ctx.createLinearGradient(0, 0, W, H)
-      bg.addColorStop(0, "#0f0f14")
-      bg.addColorStop(1, "#1a1a2e")
+      bg.addColorStop(0, "#0c0c18")
+      bg.addColorStop(1, "#161630")
       ctx.fillStyle = bg
       ctx.fillRect(0, 0, W, H)
 
@@ -103,124 +113,122 @@ export function ShareButton({
       accent.addColorStop(0.5, "#f59e0b")
       accent.addColorStop(1, "#7c3aed")
       ctx.fillStyle = accent
-      ctx.fillRect(0, 0, W, 4)
+      ctx.fillRect(0, 0, W, 5)
 
       // Branding
-      ctx.fillStyle = "#888888"
-      ctx.font = "bold 11px system-ui, sans-serif"
+      ctx.fillStyle = "#666666"
+      ctx.font = "bold 13px system-ui, -apple-system, sans-serif"
       ctx.textAlign = "center"
-      ctx.letterSpacing = "3px"
-      ctx.fillText("VOTOLOCO.COM", W / 2, 40)
+      ctx.fillText("VOTOLOCO.COM", W / 2, 48)
+
+      // Titulo
+      ctx.fillStyle = "#ffffff"
+      ctx.font = "bold 22px system-ui, -apple-system, sans-serif"
+      ctx.fillText("Mi afinidad programatica", W / 2, 88)
 
       // Mensaje de afinidad
-      ctx.fillStyle = "#cccccc"
-      ctx.font = "500 14px system-ui, sans-serif"
-      ctx.letterSpacing = "0px"
-      ctx.fillText(affinityMessage, W / 2, 68)
+      ctx.fillStyle = "#aaaaaa"
+      ctx.font = "16px system-ui, -apple-system, sans-serif"
+      ctx.fillText(affinityMessage, W / 2, 118)
 
       // Linea separadora
-      ctx.strokeStyle = "#333333"
+      ctx.strokeStyle = "#2a2a40"
       ctx.lineWidth = 1
       ctx.beginPath()
-      ctx.moveTo(60, 85)
-      ctx.lineTo(W - 60, 85)
+      ctx.moveTo(pad + 20, 140)
+      ctx.lineTo(W - pad - 20, 140)
       ctx.stroke()
 
       // Top 3 candidatos
-      ctx.textAlign = "left"
-      const startY = 110
-      const rowH = 100
+      const startY = 165
+      const rowH = 120
+      const rowPad = 16
 
       top3.forEach((item, i) => {
         if (!item.candidate) return
-        const y = startY + i * rowH
+        const y = startY + i * (rowH + 12)
         const isFirst = i === 0
+        const cardX = pad
+        const cardW = W - pad * 2
 
-        // Fondo de la fila
+        // Fondo de la tarjeta
         if (isFirst) {
-          ctx.fillStyle = item.candidate.color + "15"
-          ctx.strokeStyle = item.candidate.color + "60"
+          ctx.fillStyle = item.candidate.color + "18"
+          ctx.strokeStyle = item.candidate.color + "50"
           ctx.lineWidth = 2
-          const rx = 40, ry = y, rw = W - 80, rh = 80, r = 12
-          ctx.beginPath()
-          ctx.moveTo(rx + r, ry); ctx.lineTo(rx + rw - r, ry)
-          ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + r)
-          ctx.lineTo(rx + rw, ry + rh - r)
-          ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - r, ry + rh)
-          ctx.lineTo(rx + r, ry + rh)
-          ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - r)
-          ctx.lineTo(rx, ry + r)
-          ctx.quadraticCurveTo(rx, ry, rx + r, ry)
-          ctx.closePath()
-          ctx.fill()
-          ctx.stroke()
         } else {
-          ctx.fillStyle = "#1a1a2e"
-          ctx.strokeStyle = "#333333"
+          ctx.fillStyle = "#1a1a30"
+          ctx.strokeStyle = "#2a2a45"
           ctx.lineWidth = 1
-          const rx = 40, ry = y, rw = W - 80, rh = 80, r = 12
-          ctx.beginPath()
-          ctx.moveTo(rx + r, ry); ctx.lineTo(rx + rw - r, ry)
-          ctx.quadraticCurveTo(rx + rw, ry, rx + rw, ry + r)
-          ctx.lineTo(rx + rw, ry + rh - r)
-          ctx.quadraticCurveTo(rx + rw, ry + rh, rx + rw - r, ry + rh)
-          ctx.lineTo(rx + r, ry + rh)
-          ctx.quadraticCurveTo(rx, ry + rh, rx, ry + rh - r)
-          ctx.lineTo(rx, ry + r)
-          ctx.quadraticCurveTo(rx, ry, rx + r, ry)
-          ctx.closePath()
-          ctx.fill()
-          ctx.stroke()
         }
+        drawRoundedRect(ctx, cardX, y, cardW, rowH, 14)
+        ctx.fill()
+        ctx.stroke()
 
         // Numero de posicion
-        const badgeX = 60, badgeY = y + 28
+        const badgeX = cardX + rowPad
+        const centerY = y + rowH / 2
         ctx.beginPath()
-        ctx.arc(badgeX + 14, badgeY + 14, 14, 0, Math.PI * 2)
-        ctx.fillStyle = isFirst ? "#7c3aed" : "#333333"
+        ctx.arc(badgeX + 16, centerY, 16, 0, Math.PI * 2)
+        ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"
         ctx.fill()
         ctx.fillStyle = "#ffffff"
-        ctx.font = "bold 13px system-ui, sans-serif"
+        ctx.font = "bold 15px system-ui, -apple-system, sans-serif"
         ctx.textAlign = "center"
-        ctx.fillText(String(i + 1), badgeX + 14, badgeY + 18)
+        ctx.fillText(String(i + 1), badgeX + 16, centerY + 5)
 
         // Circulo de color del candidato
+        const avatarX = badgeX + 48
         ctx.beginPath()
-        ctx.arc(badgeX + 48, badgeY + 14, 16, 0, Math.PI * 2)
-        ctx.fillStyle = item.candidate.color + "30"
+        ctx.arc(avatarX, centerY, 18, 0, Math.PI * 2)
+        ctx.fillStyle = item.candidate.color + "25"
         ctx.fill()
         ctx.beginPath()
-        ctx.arc(badgeX + 48, badgeY + 14, 6, 0, Math.PI * 2)
+        ctx.arc(avatarX, centerY, 7, 0, Math.PI * 2)
         ctx.fillStyle = item.candidate.color
         ctx.fill()
 
-        // Nombre
+        // Nombre y partido
+        const textX = avatarX + 30
         ctx.textAlign = "left"
         ctx.fillStyle = "#ffffff"
-        ctx.font = isFirst ? "bold 16px system-ui, sans-serif" : "500 15px system-ui, sans-serif"
-        ctx.fillText(item.candidate.name, badgeX + 76, badgeY + 10)
+        ctx.font = isFirst
+          ? "bold 17px system-ui, -apple-system, sans-serif"
+          : "500 16px system-ui, -apple-system, sans-serif"
+        ctx.fillText(item.candidate.name, textX, centerY - 8)
 
-        // Partido
-        ctx.fillStyle = "#888888"
-        ctx.font = "12px system-ui, sans-serif"
-        const party = item.candidate.party.length > 35
-          ? item.candidate.party.substring(0, 35) + "..."
-          : item.candidate.party
-        ctx.fillText(party, badgeX + 76, badgeY + 28)
+        ctx.fillStyle = "#777777"
+        ctx.font = "13px system-ui, -apple-system, sans-serif"
+        const maxPartyW = cardW - (textX - cardX) - 70
+        let party = item.candidate.party
+        while (ctx.measureText(party).width > maxPartyW && party.length > 5) {
+          party = party.slice(0, -4) + "..."
+        }
+        ctx.fillText(party, textX, centerY + 14)
 
         // Score
         ctx.textAlign = "right"
-        ctx.fillStyle = isFirst ? "#7c3aed" : "#cccccc"
-        ctx.font = isFirst ? "bold 24px system-ui, sans-serif" : "bold 18px system-ui, sans-serif"
-        ctx.fillText(`${item.score}%`, W - 60, badgeY + 18)
-        ctx.textAlign = "left"
+        ctx.fillStyle = isFirst ? "#7c3aed" : "#bbbbbb"
+        ctx.font = isFirst
+          ? "bold 28px system-ui, -apple-system, sans-serif"
+          : "bold 22px system-ui, -apple-system, sans-serif"
+        ctx.fillText(`${item.score}%`, cardX + cardW - rowPad, centerY + 8)
       })
 
       // CTA
+      const ctaY = startY + 3 * (rowH + 12) + 20
       ctx.textAlign = "center"
-      ctx.fillStyle = "#666666"
-      ctx.font = "12px system-ui, sans-serif"
-      ctx.fillText("Descubre tu afinidad programática en votoloco.com", W / 2, H - 30)
+      ctx.fillStyle = "#555555"
+      ctx.font = "13px system-ui, -apple-system, sans-serif"
+      ctx.fillText("Descubre tu afinidad programatica", W / 2, ctaY)
+      ctx.fillStyle = "#7c3aed"
+      ctx.font = "bold 14px system-ui, -apple-system, sans-serif"
+      ctx.fillText("votoloco.com", W / 2, ctaY + 22)
+
+      // Credito
+      ctx.fillStyle = "#444444"
+      ctx.font = "11px system-ui, -apple-system, sans-serif"
+      ctx.fillText("Construido por David Elias Palacio", W / 2, H - 18)
 
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch (err) {
@@ -301,10 +309,7 @@ export function ShareButton({
       transition={{ duration: 0.5 }}
       className="w-full"
     >
-      {/* Share Preview Card */}
-      <Card
-        className="relative overflow-hidden border-2 border-surface-border bg-gradient-to-br from-surface via-surface to-primary/5"
-      >
+      <Card className="relative overflow-hidden border-2 border-surface-border bg-gradient-to-br from-surface via-surface to-primary/5">
         {/* Decorative accent bar */}
         <div className="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-primary via-accent to-primary" />
 
@@ -319,29 +324,27 @@ export function ShareButton({
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-5 pb-6">
-          {/* Preview Card (what the share "looks like") */}
-          <div className="rounded-brutal border-2 border-surface-border bg-background p-5">
-            {/* VotoLoco branding */}
-            <p className="mb-3 text-center text-xs font-bold uppercase tracking-widest text-text-subtle">
+        <CardContent className="space-y-4 pb-6">
+          {/* Preview Card */}
+          <div className="rounded-brutal border-2 border-surface-border bg-background p-3 sm:p-5">
+            <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-widest text-text-subtle sm:text-xs sm:mb-3">
               VotoLoco.com
             </p>
 
-            {/* Affinity message */}
-            <p className="mb-4 text-center font-display text-sm font-medium text-text-muted">
+            <p className="mb-3 text-center font-display text-xs font-medium text-text-muted sm:text-sm sm:mb-4">
               {affinityMessage}
             </p>
 
             {/* Top 3 mini ranking */}
             {top3 && top3.length > 0 && (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {top3.map((item, i) => {
                   if (!item.candidate) return null
                   const isFirst = i === 0
                   return (
                     <div
                       key={item.candidateId}
-                      className={`flex items-center gap-3 rounded-lg px-3 py-2.5 transition-colors ${
+                      className={`flex items-center gap-2 rounded-lg px-2 py-2 sm:gap-3 sm:px-3 sm:py-2.5 ${
                         isFirst
                           ? "border-2 bg-primary/5"
                           : "border border-surface-border bg-surface/50"
@@ -354,7 +357,7 @@ export function ShareButton({
                     >
                       {/* Position badge */}
                       <span
-                        className={`flex size-7 shrink-0 items-center justify-center rounded-full font-display text-xs font-bold ${
+                        className={`flex size-6 shrink-0 items-center justify-center rounded-full font-display text-[10px] font-bold sm:size-7 sm:text-xs ${
                           isFirst
                             ? "bg-primary text-primary-foreground"
                             : "bg-surface-border text-text-subtle"
@@ -365,7 +368,7 @@ export function ShareButton({
 
                       {/* Candidate avatar */}
                       <div
-                        className="flex size-8 shrink-0 items-center justify-center rounded-full"
+                        className="hidden size-8 shrink-0 items-center justify-center rounded-full sm:flex"
                         style={{
                           backgroundColor: item.candidate.color + "20",
                         }}
@@ -379,7 +382,7 @@ export function ShareButton({
                       {/* Name & party */}
                       <div className="min-w-0 flex-1">
                         <p
-                          className={`truncate font-display text-sm ${
+                          className={`font-display text-xs leading-tight sm:text-sm ${
                             isFirst
                               ? "font-bold text-text"
                               : "font-medium text-text"
@@ -387,105 +390,94 @@ export function ShareButton({
                         >
                           {item.candidate.name}
                         </p>
-                        <p className="truncate text-xs text-text-subtle">
+                        <p className="text-[10px] leading-tight text-text-subtle sm:text-xs">
                           {item.candidate.party}
                         </p>
                       </div>
 
                       {/* Score */}
-                      <div className="shrink-0 text-right">
-                        <span
-                          className={`font-display font-bold ${
-                            isFirst
-                              ? "text-lg text-primary"
-                              : "text-sm text-text-muted"
-                          }`}
-                        >
-                          {item.score}%
-                        </span>
-                      </div>
+                      <span
+                        className={`shrink-0 font-display font-bold ${
+                          isFirst
+                            ? "text-base text-primary sm:text-lg"
+                            : "text-xs text-text-muted sm:text-sm"
+                        }`}
+                      >
+                        {item.score}%
+                      </span>
                     </div>
                   )
                 })}
               </div>
             )}
 
-            {/* Call to action */}
-            <p className="mt-4 text-center text-xs text-text-subtle">
+            <p className="mt-3 text-center text-[10px] text-text-subtle sm:text-xs sm:mt-4">
               Descubre tu afinidad programatica en VotoLoco.com
             </p>
           </div>
 
           {/* Share buttons */}
-          <div className="flex flex-col gap-3">
-            {/* Primary share button */}
-            <Button
-              variant="brutal"
-              size="lg"
-              onClick={handleShare}
-              className="w-full gap-2"
-            >
-              {copied ? (
-                <>
-                  <Check className="size-4" />
-                  Enlace copiado
-                </>
-              ) : (
-                <>
-                  <Share2 className="size-4" />
-                  Compartir mis resultados
-                </>
-              )}
-            </Button>
-
-            {/* Download image */}
-            <Button
-              variant="outline"
-              size="lg"
-              onClick={handleDownloadImage}
-              className="w-full gap-2"
-            >
-              <Download className="size-4" />
-              Descargar imagen
-            </Button>
-
-            {/* Social share row */}
+          <div className="flex flex-col gap-2.5">
+            {/* Primary share + download row */}
             <div className="flex gap-2">
-              {/* WhatsApp */}
               <Button
-                variant="outline"
+                variant="brutal"
                 size="lg"
-                onClick={handleWhatsApp}
-                className="flex-1 gap-2 hover:bg-[#25D366]/10 hover:text-[#25D366] hover:border-[#25D366]/30"
-              >
-                <WhatsAppIcon className="size-4" />
-                WhatsApp
-              </Button>
-
-              {/* Twitter/X */}
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={handleTwitter}
-                className="flex-1 gap-2 hover:bg-foreground/5"
-              >
-                <XIcon className="size-4" />
-                Publicar en X
-              </Button>
-
-              {/* Copy link */}
-              <Button
-                variant="outline"
-                size="icon-lg"
-                onClick={copyToClipboard}
-                title="Copiar enlace"
-                className="shrink-0"
+                onClick={handleShare}
+                className="flex-1 gap-2"
               >
                 {copied ? (
-                  <Check className="size-4 text-success" />
+                  <>
+                    <Check className="size-4" />
+                    <span className="text-sm">Copiado</span>
+                  </>
                 ) : (
-                  <Link2 className="size-4" />
+                  <>
+                    <Share2 className="size-4" />
+                    <span className="text-sm">Compartir</span>
+                  </>
                 )}
+              </Button>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={handleDownloadImage}
+                className="gap-2"
+              >
+                <Download className="size-4" />
+                <span className="hidden sm:inline text-sm">Imagen</span>
+              </Button>
+            </div>
+
+            {/* Social row */}
+            <div className="grid grid-cols-3 gap-2">
+              <Button
+                variant="outline"
+                onClick={handleWhatsApp}
+                className="gap-1.5 text-xs hover:bg-[#25D366]/10 hover:text-[#25D366] hover:border-[#25D366]/30 sm:gap-2 sm:text-sm"
+              >
+                <WhatsAppIcon className="size-3.5 sm:size-4" />
+                WhatsApp
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleTwitter}
+                className="gap-1.5 text-xs hover:bg-foreground/5 sm:gap-2 sm:text-sm"
+              >
+                <XIcon className="size-3.5 sm:size-4" />
+                X
+              </Button>
+              <Button
+                variant="outline"
+                onClick={copyToClipboard}
+                className="gap-1.5 text-xs sm:gap-2 sm:text-sm"
+              >
+                {copied ? (
+                  <Check className="size-3.5 text-success sm:size-4" />
+                ) : (
+                  <Link2 className="size-3.5 sm:size-4" />
+                )}
+                Copiar
               </Button>
             </div>
           </div>
