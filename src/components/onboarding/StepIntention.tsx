@@ -6,7 +6,7 @@ import { ShieldCheck, User } from "lucide-react"
 
 const SPECIAL_OPTIONS = [
   { value: "undecided", label: "Aún no decido" },
-  { value: "blank", label: "Voto en blanco" },
+  { value: "c0", label: "Voto en Blanco" },
   { value: "na", label: "Prefiero no decir" },
 ]
 

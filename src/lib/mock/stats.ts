@@ -10,6 +10,7 @@ export const mockStats: PublicStats = {
     { candidateId: "c4", pct: 14.8 },
     { candidateId: "c3", pct: 13.2 },
     { candidateId: "c6", pct: 9.3 },
+    { candidateId: "c0", pct: 5.0 },
   ],
   by_region: [
     {

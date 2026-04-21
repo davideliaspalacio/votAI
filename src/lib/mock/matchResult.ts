@@ -165,5 +165,20 @@ export const mockMatchResult: MatchResult = {
         },
       ],
     },
+    {
+      candidateId: "c0",
+      score: 50,
+      summary:
+        "Tu posición neutral en varios ejes se alinea con el escepticismo del voto en blanco.",
+      byAxis: [
+        {
+          axis: "Reforma política",
+          userStance: "Apoya reformas graduales",
+          candidateStance: "El problema no es la Constitución sino la clase política",
+          quote: "Reformar con los mismos políticos no funciona",
+          programPage: 0,
+        },
+      ],
+    },
   ],
 }
