@@ -62,10 +62,21 @@ export function LegalFooter() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-surface-border pt-6 text-center text-xs text-text-subtle">
+        <div className="mt-8 border-t border-surface-border pt-6 text-center text-xs text-text-subtle space-y-2">
           <p>
             © {new Date().getFullYear()} VotoLoco. Herramienta de afinidad
             programática. No es una encuesta. No predice resultados electorales.
+          </p>
+          <p>
+            Construido por{" "}
+            <a
+              href="https://www.davidpalacio.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-text-muted transition-colors hover:text-primary"
+            >
+              David Elias Palacio
+            </a>
           </p>
         </div>
       </div>
