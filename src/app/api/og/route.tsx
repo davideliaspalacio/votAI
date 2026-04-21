@@ -80,7 +80,7 @@ export async function GET(request: NextRequest) {
             textAlign: "center",
           }}
         >
-          Descubre tu afinidad en votoloco.com • No es una encuesta
+          Descubre tu afinidad en vot-ai.vercel.app • No es una encuesta
         </div>
       </div>
     ),

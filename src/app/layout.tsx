@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_CO",
-    url: "https://votoloco.com",
+    url: "https://vot-ai.vercel.app",
     siteName: "VotoLoco",
     title: "VotoLoco - 10 preguntas. Tu candidato real. Sin enredos.",
     description:

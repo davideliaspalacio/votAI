@@ -163,10 +163,10 @@ export default function MetodologiaPage() {
               Si tienes preguntas, sugerencias o detectas un error, escríbenos
               a{" "}
               <a
-                href="mailto:hola@votoloco.com"
+                href="mailto:hola@vot-ai.vercel.app"
                 className="text-primary underline underline-offset-4"
               >
-                hola@votoloco.com
+                hola@vot-ai.vercel.app
               </a>
               .
             </p>

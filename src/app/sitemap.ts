@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next"
 import { mockCandidates } from "@/lib/mock/candidates"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://votoloco.com"
+  const baseUrl = "https://vot-ai.vercel.app"
 
   const staticPages: MetadataRoute.Sitemap = [
     {

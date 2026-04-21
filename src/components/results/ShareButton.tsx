@@ -72,7 +72,7 @@ export function ShareButton({
 
   const shareUrl = typeof window !== "undefined"
     ? `${window.location.origin}/resultados/${sessionId}`
-    : `https://votoloco.com/resultados/${sessionId}`
+    : `https://vot-ai.vercel.app/resultados/${sessionId}`
 
   const shareText = `Hice el test de afinidad en VotoLoco.com \u2014 mi mayor afinidad es con ${candidateName} (${score}%)`
 
@@ -223,7 +223,7 @@ export function ShareButton({
       ctx.fillText("Descubre tu afinidad programatica", W / 2, ctaY)
       ctx.fillStyle = "#7c3aed"
       ctx.font = "bold 14px system-ui, -apple-system, sans-serif"
-      ctx.fillText("votoloco.com", W / 2, ctaY + 22)
+      ctx.fillText("vot-ai.vercel.app", W / 2, ctaY + 22)
 
       // Credito
       ctx.fillStyle = "#444444"
