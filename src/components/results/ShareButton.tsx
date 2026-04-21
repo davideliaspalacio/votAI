@@ -70,11 +70,11 @@ export function ShareButton({
   const [copied, setCopied] = useState(false)
   const prefersReduced = useReducedMotion()
 
-  const shareUrl = typeof window !== "undefined"
-    ? `${window.location.origin}/resultados/${sessionId}`
-    : `https://vot-ai.vercel.app/resultados/${sessionId}`
+  const origin = typeof window !== "undefined" ? window.location.origin : ""
+  const host = typeof window !== "undefined" ? window.location.host : ""
+  const shareUrl = `${origin}/resultados/${sessionId}`
 
-  const shareText = `Hice el test de afinidad en VotoLoco.com \u2014 mi mayor afinidad es con ${candidateName} (${score}%)`
+  const shareText = `Hice el test de afinidad en ${host} \u2014 mi mayor afinidad es con ${candidateName} (${score}%)`
 
   const affinityMessage = getAffinityMessage(score)
 
@@ -119,7 +119,7 @@ export function ShareButton({
       ctx.fillStyle = "#666666"
       ctx.font = "bold 13px system-ui, -apple-system, sans-serif"
       ctx.textAlign = "center"
-      ctx.fillText("VOTOLOCO.COM", W / 2, 48)
+      ctx.fillText(host.toUpperCase(), W / 2, 48)
 
       // Titulo
       ctx.fillStyle = "#ffffff"
@@ -223,7 +223,7 @@ export function ShareButton({
       ctx.fillText("Descubre tu afinidad programatica", W / 2, ctaY)
       ctx.fillStyle = "#7c3aed"
       ctx.font = "bold 14px system-ui, -apple-system, sans-serif"
-      ctx.fillText("vot-ai.vercel.app", W / 2, ctaY + 22)
+      ctx.fillText(host, W / 2, ctaY + 22)
 
       // Credito
       ctx.fillStyle = "#444444"
@@ -328,7 +328,7 @@ export function ShareButton({
           {/* Preview Card */}
           <div className="rounded-brutal border-2 border-surface-border bg-background p-3 sm:p-5">
             <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-widest text-text-subtle sm:text-xs sm:mb-3">
-              VotoLoco.com
+              VotAI
             </p>
 
             <p className="mb-3 text-center font-display text-xs font-medium text-text-muted sm:text-sm sm:mb-4">
@@ -412,7 +412,7 @@ export function ShareButton({
             )}
 
             <p className="mt-3 text-center text-[10px] text-text-subtle sm:text-xs sm:mt-4">
-              Descubre tu afinidad programatica en VotoLoco.com
+              Descubre tu afinidad programatica en VotAI
             </p>
           </div>
 
