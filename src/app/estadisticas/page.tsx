@@ -20,6 +20,7 @@ import { Lock, Loader2 } from "lucide-react"
 export default function EstadisticasPage() {
   const [stats, setStats] = useState<PublicStats | null>(null)
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [gate, setGate] = useState<"loading" | "stats" | "silence" | "disabled">("loading")
 
   useEffect(() => {
@@ -41,6 +42,7 @@ export default function EstadisticasPage() {
     api
       .getPublicStats()
       .then(setStats)
+      .catch((err) => setError(err instanceof Error ? err.message : "Error cargando estadísticas"))
       .finally(() => setLoading(false))
   }, [])
 
@@ -126,6 +128,17 @@ export default function EstadisticasPage() {
             {Array.from({ length: 6 }).map((_, i) => (
               <ChartSkeleton key={i} />
             ))}
+          </div>
+        ) : error ? (
+          <div className="mt-10 rounded-brutal border-2 border-surface-border bg-surface p-8 text-center">
+            <p className="font-display text-lg font-bold text-text">
+              No se pudieron cargar las estadísticas
+            </p>
+            <p className="mt-2 text-sm text-text-muted">
+              {error.includes("403") || error.includes("insufficient")
+                ? "Aún no hay suficientes datos. Vuelve cuando más personas hayan hecho el test."
+                : "Hubo un problema al conectar con el servidor. Intenta de nuevo más tarde."}
+            </p>
           </div>
         ) : stats ? (
           <div className="mt-10 space-y-8">
