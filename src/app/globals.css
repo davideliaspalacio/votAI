@@ -1,26 +1,280 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
+@custom-variant dark (&:is(.dark *));
+
+/* ── VotoLoco shadcn CSS variables (dark-first, always .dark) ── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --radius: 0.5rem;
+  --background: #0B0B0F;
+  --foreground: #FAFAFA;
+  --card: #14141B;
+  --card-foreground: #FAFAFA;
+  --popover: #14141B;
+  --popover-foreground: #FAFAFA;
+  --primary: #FFDE3A;
+  --primary-foreground: #0B0B0F;
+  --secondary: #1C1C26;
+  --secondary-foreground: #FAFAFA;
+  --muted: #14141B;
+  --muted-foreground: #A1A1AA;
+  --accent: #FF4D6D;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --border: #2A2A3A;
+  --input: #2A2A3A;
+  --ring: #FFDE3A;
+  --chart-1: #FFDE3A;
+  --chart-2: #FF4D6D;
+  --chart-3: #22C55E;
+  --chart-4: #3B82F6;
+  --chart-5: #A855F7;
+  --sidebar: #14141B;
+  --sidebar-foreground: #FAFAFA;
+  --sidebar-primary: #FFDE3A;
+  --sidebar-primary-foreground: #0B0B0F;
+  --sidebar-accent: #1C1C26;
+  --sidebar-accent-foreground: #FAFAFA;
+  --sidebar-border: #2A2A3A;
+  --sidebar-ring: #FFDE3A;
+}
+
+.dark {
+  --background: #0B0B0F;
+  --foreground: #FAFAFA;
+  --card: #14141B;
+  --card-foreground: #FAFAFA;
+  --popover: #14141B;
+  --popover-foreground: #FAFAFA;
+  --primary: #FFDE3A;
+  --primary-foreground: #0B0B0F;
+  --secondary: #1C1C26;
+  --secondary-foreground: #FAFAFA;
+  --muted: #14141B;
+  --muted-foreground: #A1A1AA;
+  --accent: #FF4D6D;
+  --accent-foreground: #FFFFFF;
+  --destructive: #EF4444;
+  --border: #2A2A3A;
+  --input: #2A2A3A;
+  --ring: #FFDE3A;
+  --chart-1: #FFDE3A;
+  --chart-2: #FF4D6D;
+  --chart-3: #22C55E;
+  --chart-4: #3B82F6;
+  --chart-5: #A855F7;
+  --sidebar: #14141B;
+  --sidebar-foreground: #FAFAFA;
+  --sidebar-primary: #FFDE3A;
+  --sidebar-primary-foreground: #0B0B0F;
+  --sidebar-accent: #1C1C26;
+  --sidebar-accent-foreground: #FAFAFA;
+  --sidebar-border: #2A2A3A;
+  --sidebar-ring: #FFDE3A;
 }
 
 @theme inline {
+  /* ── Fonts ── */
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-space-grotesk), var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-display);
+
+  /* ── Custom colors (beyond shadcn) ── */
+  --color-surface: #14141B;
+  --color-surface-hover: #1C1C26;
+  --color-surface-border: #2A2A3A;
+  --color-success: #22C55E;
+  --color-success-foreground: #0B0B0F;
+  --color-warning: #F59E0B;
+  --color-warning-foreground: #0B0B0F;
+  --color-text: #FAFAFA;
+  --color-text-muted: #A1A1AA;
+  --color-text-subtle: #71717A;
+
+  /* ── Border Radius ── */
+  --radius-brutal: 4px;
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* ── Font Sizes ── */
+  --font-size-display-xl: 4rem;
+  --font-size-display-xl--line-height: 1.1;
+  --font-size-display-xl--letter-spacing: -0.02em;
+
+  --font-size-display-lg: 3rem;
+  --font-size-display-lg--line-height: 1.15;
+  --font-size-display-lg--letter-spacing: -0.02em;
+
+  --font-size-display-md: 2.25rem;
+  --font-size-display-md--line-height: 1.2;
+  --font-size-display-md--letter-spacing: -0.01em;
+
+  --font-size-display-sm: 1.875rem;
+  --font-size-display-sm--line-height: 1.25;
+  --font-size-display-sm--letter-spacing: -0.01em;
+
+  /* ── Shadows ── */
+  --shadow-brutal: 4px 4px 0px 0px #FFDE3A;
+  --shadow-brutal-sm: 2px 2px 0px 0px #FFDE3A;
+  --shadow-brutal-accent: 4px 4px 0px 0px #FF4D6D;
+  --shadow-brutal-hover: 6px 6px 0px 0px #FFDE3A;
+  --shadow-glow: 0 0 20px rgba(255, 222, 58, 0.15);
+  --shadow-glow-accent: 0 0 20px rgba(255, 77, 109, 0.15);
+
+  /* ── Animations ── */
+  --animate-slide-up: slide-up 0.4s ease-out;
+  --animate-fade-in: fade-in 0.3s ease-out;
+  --animate-scale-in: scale-in 0.3s ease-out;
+  --animate-shimmer: shimmer 2s infinite;
+  --animate-pulse-glow: pulse-glow 2s ease-in-out infinite;
+
+  /* ── Breakpoints ── */
+  --breakpoint-xs: 375px;
+
+  /* ── shadcn vars mapped to theme ── */
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@keyframes slide-up {
+  0% { transform: translateY(10px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes scale-in {
+  0% { transform: scale(0.95); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 15px rgba(255, 222, 58, 0.1); }
+  50% { box-shadow: 0 0 30px rgba(255, 222, 58, 0.3); }
+}
+
+/* ── Brutalismo suave utility ── */
+.brutal-card {
+  background: var(--color-surface);
+  border: 2px solid var(--color-surface-border);
+  border-radius: var(--radius-brutal);
+  box-shadow: var(--shadow-brutal);
+  transition: all 0.2s ease;
+}
+.brutal-card:hover {
+  box-shadow: var(--shadow-brutal-hover);
+  transform: translate(-2px, -2px);
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ── Focus visible ── */
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* ── Skip link ── */
+.skip-link {
+  position: absolute;
+  top: -2.5rem;
+  left: 1rem;
+  z-index: 50;
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  transition: top 0.2s;
+}
+.skip-link:focus {
+  top: 1rem;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-surface-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-subtle);
+}
+
+/* ── Noise texture overlay ── */
+.noise-bg::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
