@@ -1,15 +1,23 @@
 "use client"
 
+import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Zap } from "lucide-react"
 import { formatNumber } from "@/lib/utils"
-
-const MOCK_COUNT = 2547
+import { api } from "@/lib/api"
 
 export function Hero() {
   const prefersReduced = useReducedMotion()
+  const [sessionCount, setSessionCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    api
+      .getPublicStats()
+      .then((stats) => setSessionCount(stats.total_sessions))
+      .catch(() => setSessionCount(null))
+  }, [])
 
   const animate = prefersReduced
     ? {}
@@ -73,16 +81,18 @@ export function Hero() {
           </Link>
         </motion.div>
 
-        <motion.p
-          className="mt-6 text-sm text-text-subtle"
-          {...animate}
-          transition={{ duration: 0.5, delay: 0.4 }}
-        >
-          <span className="font-display font-semibold text-primary">
-            {formatNumber(MOCK_COUNT)}+
-          </span>{" "}
-          colombianos ya descubrieron su afinidad programática
-        </motion.p>
+        {sessionCount !== null && sessionCount > 0 && (
+          <motion.p
+            className="mt-6 text-sm text-text-subtle"
+            {...animate}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            <span className="font-display font-semibold text-primary">
+              {formatNumber(sessionCount)}+
+            </span>{" "}
+            colombianos ya descubrieron su afinidad programática
+          </motion.p>
+        )}
       </div>
     </section>
   )
