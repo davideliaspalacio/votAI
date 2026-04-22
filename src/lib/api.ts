@@ -34,25 +34,6 @@ async function fetcher<T>(path: string, options?: RequestInit): Promise<T> {
   return res.json()
 }
 
-function getDeviceHash(): string {
-  if (typeof window === "undefined") return ""
-  const raw = [
-    window.screen.width,
-    window.screen.height,
-    window.screen.colorDepth,
-    Intl.DateTimeFormat().resolvedOptions().timeZone,
-    navigator.language,
-    navigator.hardwareConcurrency || 0,
-  ].join("|")
-  // Simple hash
-  let hash = 0
-  for (let i = 0; i < raw.length; i++) {
-    const char = raw.charCodeAt(i)
-    hash = ((hash << 5) - hash + char) | 0
-  }
-  return Math.abs(hash).toString(36)
-}
-
 export const api = {
   getCandidates: async (): Promise<Candidate[]> => {
     if (USE_MOCKS) return mockCandidates
@@ -77,10 +58,7 @@ export const api = {
     }
     return fetcher("/api/session/start", {
       method: "POST",
-      body: JSON.stringify({
-        ...payload,
-        device_hash: getDeviceHash(),
-      }),
+      body: JSON.stringify(payload),
     })
   },
 

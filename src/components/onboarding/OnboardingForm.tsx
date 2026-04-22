@@ -77,13 +77,8 @@ export function OnboardingForm() {
         initialPreference,
       })
       router.push("/quiz")
-    } catch (err) {
-      const error = err as Error & { status?: number; code?: string; retryAfterHours?: number }
-      if (error.status === 403 && error.code === "RATE_LIMIT_EXCEEDED") {
-        toast.error(`Ya hiciste 2 tests en las últimas ${error.retryAfterHours ?? 12} horas. Intenta más tarde.`, { duration: 6000 })
-      } else {
-        toast.error("Error al iniciar sesión. Intenta de nuevo.")
-      }
+    } catch {
+      toast.error("Error al iniciar sesión. Intenta de nuevo.")
       setLoading(false)
     }
   }
