@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useState, useEffect } from "react"
-import { Menu, Zap } from "lucide-react"
+import { Menu } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet"
 
@@ -28,9 +28,9 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-surface-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <Zap className="size-5 text-primary" />
+          <img src="/votolocoimage.png" alt="VotAI" className="size-8" />
           <span className="font-display text-lg font-bold text-text">
-            VotoLoco
+            VotAI
           </span>
         </Link>
 

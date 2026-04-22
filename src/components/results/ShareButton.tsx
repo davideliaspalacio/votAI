@@ -242,13 +242,13 @@ export function ShareButton({
       try {
         const blob = await generateImage()
         const files = blob
-          ? [new File([blob], "votoloco-resultado.png", { type: "image/png" })]
+          ? [new File([blob], "votai-resultado.png", { type: "image/png" })]
           : undefined
 
         const canShareFiles = files && navigator.canShare?.({ files })
 
         await navigator.share({
-          title: "Mi afinidad programatica \u2014 VotoLoco",
+          title: "Mi afinidad programatica \u2014 VotAI",
           text: shareText,
           url: shareUrl,
           ...(canShareFiles ? { files } : {}),
@@ -270,7 +270,7 @@ export function ShareButton({
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
-    a.download = "votoloco-resultado.png"
+    a.download = "votai-resultado.png"
     a.click()
     URL.revokeObjectURL(url)
     toast.success("Imagen descargada")

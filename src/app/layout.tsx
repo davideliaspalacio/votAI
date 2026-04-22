@@ -19,8 +19,8 @@ const spaceGrotesk = Space_Grotesk({
 
 export const metadata: Metadata = {
   title: {
-    default: "VotoLoco - 10 preguntas. Tu candidato real. Sin enredos.",
-    template: "%s | VotoLoco",
+    default: "VotAI - 10 preguntas. Tu candidato real. Sin enredos.",
+    template: "%s | VotAI",
   },
   description:
     "Descubre qué candidato presidencial de Colombia 2026 se alinea con lo que piensas. Test de afinidad programática basado en propuestas reales. No es una encuesta.",
@@ -31,19 +31,19 @@ export const metadata: Metadata = {
     "test político",
     "propuestas candidatos",
   ],
-  authors: [{ name: "VotoLoco" }],
+  authors: [{ name: "VotAI" }],
   openGraph: {
     type: "website",
     locale: "es_CO",
     url: "https://vot-ai.vercel.app",
-    siteName: "VotoLoco",
-    title: "VotoLoco - 10 preguntas. Tu candidato real. Sin enredos.",
+    siteName: "VotAI",
+    title: "VotAI - 10 preguntas. Tu candidato real. Sin enredos.",
     description:
       "Descubre qué candidato se alinea con lo que piensas. Test de afinidad programática basado en propuestas reales.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "VotoLoco - Tu candidato real en 10 preguntas",
+    title: "VotAI - Tu candidato real en 10 preguntas",
     description:
       "Descubre tu afinidad programática con los candidatos presidenciales de Colombia 2026.",
   },

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, Zap } from "lucide-react"
+import { ArrowRight } from "lucide-react"
 import { formatNumber } from "@/lib/utils"
 import { api } from "@/lib/api"
 
@@ -40,7 +40,7 @@ export function Hero() {
           transition={{ duration: 0.5 }}
         >
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-sm text-text-muted">
-            <Zap className="size-3.5 text-primary" />
+            <img src="/votolocoimage.png" alt="" className="size-5" />
             Elecciones Colombia 2026
           </div>
         </motion.div>

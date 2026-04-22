@@ -6,7 +6,7 @@ import { Disclaimer } from "@/components/common/Disclaimer"
 export const metadata: Metadata = {
   title: "Metodología",
   description:
-    "Cómo funciona VotoLoco: metodología del test de afinidad programática, fuentes de datos, limitaciones y tratamiento de datos personales.",
+    "Cómo funciona VotAI: metodología del test de afinidad programática, fuentes de datos, limitaciones y tratamiento de datos personales.",
 }
 
 export default function MetodologiaPage() {
@@ -18,7 +18,7 @@ export default function MetodologiaPage() {
           Metodología
         </h1>
         <p className="mt-4 text-lg text-text-muted">
-          Transparencia total sobre cómo funciona VotoLoco.
+          Transparencia total sobre cómo funciona VotAI.
         </p>
 
         <div className="mt-12 space-y-10 text-sm leading-relaxed text-text-muted">
@@ -70,16 +70,16 @@ export default function MetodologiaPage() {
               4. ¿Por qué NO es una encuesta?
             </h2>
             <p>
-              VotoLoco <strong className="text-text">NO</strong> es una encuesta
+              VotAI <strong className="text-text">NO</strong> es una encuesta
               electoral y <strong className="text-text">NO</strong> está
               registrada ante el Consejo Nacional Electoral (CNE) porque no lo
               es. Una encuesta electoral mide intención de voto preguntando
-              directamente &ldquo;¿por quién va a votar?&rdquo;. VotoLoco mide
+              directamente &ldquo;¿por quién va a votar?&rdquo;. VotAI mide
               afinidad programática: compara tus posiciones en temas concretos
               con las propuestas publicadas por cada candidato.
             </p>
             <p className="mt-3">
-              VotoLoco no predice resultados electorales, no mide intención de
+              VotAI no predice resultados electorales, no mide intención de
               voto y no constituye una recomendación de voto. Los resultados
               individuales reflejan la cercanía entre las respuestas del usuario
               y las propuestas oficiales de los candidatos, nada más.
@@ -119,7 +119,7 @@ export default function MetodologiaPage() {
                 puedas verificar.
               </li>
               <li>
-                Los usuarios de VotoLoco son una muestra autoseleccionada de
+                Los usuarios de VotAI son una muestra autoseleccionada de
                 personas con acceso a internet, no una muestra representativa
                 de la población colombiana.
               </li>
