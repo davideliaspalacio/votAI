@@ -152,7 +152,7 @@ export function QuizContainer() {
       </div>
 
       {/* Navigation — fixed at bottom */}
-      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-surface-border bg-background/90 backdrop-blur-md px-4 py-4">
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-surface-border bg-background/95 backdrop-blur-md px-4 py-4">
         <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
           <Button
             variant="ghost"

@@ -73,7 +73,7 @@ export default function RootLayout({
           Ir al contenido principal
         </a>
         <ElectoralSilenceBanner />
-        <div id="main-content" className="relative z-10 flex flex-1 flex-col">
+        <div id="main-content" className="relative flex flex-1 flex-col">
           {children}
         </div>
         <Analytics />

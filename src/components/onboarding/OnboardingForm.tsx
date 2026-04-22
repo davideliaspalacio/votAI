@@ -110,7 +110,7 @@ export function OnboardingForm() {
       }
 
   return (
-    <div className="flex min-h-dvh flex-col px-4 py-8">
+    <div className="flex min-h-dvh flex-col px-4 pb-28 pt-8">
       {/* Progress */}
       <div className="mx-auto w-full max-w-md">
         <div className="mb-2 flex items-center justify-between text-xs text-text-subtle">
@@ -121,8 +121,8 @@ export function OnboardingForm() {
       </div>
 
       {/* Step content */}
-      <div className="flex flex-1 items-center justify-center py-8">
-        <div className="w-full max-w-lg">
+      <div className="flex flex-1 py-8">
+        <div className="w-full max-w-lg mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={step}
@@ -143,48 +143,50 @@ export function OnboardingForm() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="mx-auto flex w-full max-w-md items-center justify-between gap-4">
-        <Button
-          variant="ghost"
-          onClick={goPrev}
-          disabled={step === 0}
-          className="gap-2"
-        >
-          <ArrowLeft className="size-4" />
-          Anterior
-        </Button>
+      {/* Navigation — always visible at bottom */}
+      <div className="fixed inset-x-0 bottom-0 z-50 border-t border-surface-border bg-background/95 backdrop-blur-md px-4 py-4">
+        <div className="mx-auto flex w-full max-w-md items-center justify-between gap-4">
+          <Button
+            variant="ghost"
+            onClick={goPrev}
+            disabled={step === 0}
+            className="gap-2"
+          >
+            <ArrowLeft className="size-4" />
+            Anterior
+          </Button>
 
-        {step < TOTAL_STEPS - 1 ? (
-          <Button
-            variant="brutal"
-            onClick={goNext}
-            disabled={!canAdvance()}
-            className="gap-2"
-          >
-            Siguiente
-            <ArrowRight className="size-4" />
-          </Button>
-        ) : (
-          <Button
-            variant="brutal"
-            onClick={handleSubmit}
-            disabled={!canAdvance() || loading}
-            className="gap-2"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Iniciando...
-              </>
-            ) : (
-              <>
-                Comenzar el quiz
-                <ArrowRight className="size-4" />
-              </>
-            )}
-          </Button>
-        )}
+          {step < TOTAL_STEPS - 1 ? (
+            <Button
+              variant="brutal"
+              onClick={goNext}
+              disabled={!canAdvance()}
+              className="gap-2"
+            >
+              Siguiente
+              <ArrowRight className="size-4" />
+            </Button>
+          ) : (
+            <Button
+              variant="brutal"
+              onClick={handleSubmit}
+              disabled={!canAdvance() || loading}
+              className="gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Iniciando...
+                </>
+              ) : (
+                <>
+                  Comenzar el quiz
+                  <ArrowRight className="size-4" />
+                </>
+              )}
+            </Button>
+          )}
+        </div>
       </div>
     </div>
   )
