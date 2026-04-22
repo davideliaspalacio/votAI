@@ -23,9 +23,34 @@ async function fetcher<T>(path: string, options?: RequestInit): Promise<T> {
     },
   })
   if (!res.ok) {
-    throw new Error(`API error: ${res.status} ${res.statusText}`)
+    const body = await res.json().catch(() => ({}))
+    const msg = body?.message || `API error: ${res.status} ${res.statusText}`
+    const err = new Error(msg) as Error & { status: number; code: string; retryAfterHours?: number }
+    err.status = res.status
+    err.code = body?.error || ""
+    err.retryAfterHours = body?.retryAfterHours
+    throw err
   }
   return res.json()
+}
+
+function getDeviceHash(): string {
+  if (typeof window === "undefined") return ""
+  const raw = [
+    window.screen.width,
+    window.screen.height,
+    window.screen.colorDepth,
+    Intl.DateTimeFormat().resolvedOptions().timeZone,
+    navigator.language,
+    navigator.hardwareConcurrency || 0,
+  ].join("|")
+  // Simple hash
+  let hash = 0
+  for (let i = 0; i < raw.length; i++) {
+    const char = raw.charCodeAt(i)
+    hash = ((hash << 5) - hash + char) | 0
+  }
+  return Math.abs(hash).toString(36)
 }
 
 export const api = {
@@ -52,7 +77,10 @@ export const api = {
     }
     return fetcher("/api/session/start", {
       method: "POST",
-      body: JSON.stringify(payload),
+      body: JSON.stringify({
+        ...payload,
+        device_hash: getDeviceHash(),
+      }),
     })
   },
 
