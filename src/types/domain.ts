@@ -49,11 +49,17 @@ export const AXIS_LABELS: Record<Axis, string> = {
 
 // ── Quiz ──
 
+export interface QuestionOption {
+  label: string
+  value: number
+}
+
 export interface Question {
   id: string
   text: string
   axis: Axis
-  context?: string // neutral "¿Por qué es importante?" text
+  context?: string
+  options?: QuestionOption[]
 }
 
 export interface QuizAnswer {
