@@ -66,17 +66,22 @@ export function LegalFooter() {
             © {new Date().getFullYear()} VotAI. Herramienta de afinidad
             programática. No es una encuesta. No predice resultados electorales.
           </p>
-          <p>
-            Construido por{" "}
-            <a
-              href="https://www.davidpalacio.dev/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-text-muted transition-colors hover:text-primary"
-            >
-              David Elias Palacio
-            </a>
-          </p>
+          <div className="space-y-1">
+            <p>
+              <a
+                href="https://www.davidpalacio.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted transition-colors hover:text-primary"
+              >
+                David Elias Palacio
+              </a>
+              {" — "}Ingeniero de Software &amp; IA
+            </p>
+            <p>
+              Ricardo Palacio — Estratega de Producto &amp; Visión
+            </p>
+          </div>
         </div>
       </div>
     </footer>

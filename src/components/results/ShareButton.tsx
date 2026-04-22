@@ -228,7 +228,7 @@ export function ShareButton({
       // Credito
       ctx.fillStyle = "#444444"
       ctx.font = "11px system-ui, -apple-system, sans-serif"
-      ctx.fillText("Construido por David Elias Palacio", W / 2, H - 18)
+      ctx.fillText("David E. Palacio · Ing. Software & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 18)
 
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch (err) {

@@ -312,7 +312,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
       ctx.fillText(host, W / 2, curY + 20)
 
       ctx.fillStyle = "#444"; ctx.font = "11px system-ui, sans-serif"
-      ctx.fillText("Construido por David Elias Palacio", W / 2, H - 14)
+      ctx.fillText("David E. Palacio · Ing. Software & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 14)
 
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch { return null }
