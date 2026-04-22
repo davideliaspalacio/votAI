@@ -86,7 +86,11 @@ export default function ResultsPage() {
                   className="flex size-20 items-center justify-center rounded-full"
                   style={{ backgroundColor: topCandidate.color + "20" }}
                 >
-                  <User className="size-10" style={{ color: topCandidate.color }} />
+                  {topCandidate.photo ? (
+                    <img src={topCandidate.photo} alt={topCandidate.name} className="size-full rounded-full object-cover" />
+                  ) : (
+                    <User className="size-10" style={{ color: topCandidate.color }} />
+                  )}
                 </div>
                 <h2 className="font-display text-2xl font-bold text-text">
                   {topCandidate.name}

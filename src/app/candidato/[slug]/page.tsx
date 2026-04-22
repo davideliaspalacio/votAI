@@ -50,7 +50,11 @@ export default async function CandidatePage({ params }: Props) {
             className="flex size-20 shrink-0 items-center justify-center rounded-full"
             style={{ backgroundColor: candidate.color + "20" }}
           >
-            <User className="size-10" style={{ color: candidate.color }} />
+            {candidate.photo ? (
+              <img src={candidate.photo} alt={candidate.name} className="size-full rounded-full object-cover" />
+            ) : (
+              <User className="size-10" style={{ color: candidate.color }} />
+            )}
           </div>
           <div>
             <h1 className="font-display text-display-sm font-bold text-text">

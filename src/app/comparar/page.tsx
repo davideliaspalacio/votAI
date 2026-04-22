@@ -54,7 +54,11 @@ export default function CompararPage() {
                 )}
                 disabled={!isSelected && selected.length >= 3}
               >
-                <User className="size-4" style={{ color: c.color }} />
+                {c.photo ? (
+                  <img src={c.photo} alt={c.name} className="size-4 rounded-full object-cover" />
+                ) : (
+                  <User className="size-4" style={{ color: c.color }} />
+                )}
                 {c.name}
                 {isSelected && <X className="size-3 text-text-subtle" />}
               </button>

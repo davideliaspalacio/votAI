@@ -38,7 +38,11 @@ export function RankingList({ results }: RankingListProps) {
                 className="flex size-10 shrink-0 items-center justify-center rounded-full"
                 style={{ backgroundColor: candidate.color + "20" }}
               >
-                <User className="size-5" style={{ color: candidate.color }} />
+                {candidate.photo ? (
+                  <img src={candidate.photo} alt={candidate.name} className="size-full rounded-full object-cover" />
+                ) : (
+                  <User className="size-5" style={{ color: candidate.color }} />
+                )}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between gap-3">

@@ -7,6 +7,7 @@ export const mockCandidates: Candidate[] = [
     name: "Iván Cepeda",
     party: "Pacto Histórico",
     color: "#FFD700",
+    photo: "/ivancepeda.jpg",
     bio: "Senador de larga trayectoria, defensor de derechos humanos y de la paz. Impulsor de la justicia social, la reforma agraria y los acuerdos de paz. Referente de la izquierda colombiana.",
     positions: {
       economia: {
@@ -67,6 +68,7 @@ export const mockCandidates: Candidate[] = [
     name: "Abelardo de la Espriella",
     party: "Defensores de la Patria",
     color: "#1E3A5F",
+    photo: "/abelardofoto.jpeg",
     bio: "Abogado penalista de alto perfil, impulsor de un modelo de seguridad al estilo Bukele y Milei. Defiende mano dura, libre mercado radical y reducción drástica del Estado.",
     positions: {
       economia: {
@@ -127,6 +129,7 @@ export const mockCandidates: Candidate[] = [
     name: "Paloma Valencia",
     party: "Centro Democrático / Gran Coalición",
     color: "#0047AB",
+    photo: "/paloma_valencia.jpg",
     bio: "Senadora por el Centro Democrático, defensora de la seguridad, la libre empresa y la modernización del Estado. Lidera una gran coalición de centro-derecha.",
     positions: {
       economia: {
@@ -187,6 +190,7 @@ export const mockCandidates: Candidate[] = [
     name: "Claudia López",
     party: "Con Claudia imparables",
     color: "#8B5CF6",
+    photo: "/claudia.jpg",
     bio: "Exalcaldesa de Bogotá, politóloga y líder anticorrupción. Impulsora de la movilidad sostenible, la transparencia y la equidad de género. Centro-izquierda pragmática.",
     positions: {
       economia: {
@@ -247,6 +251,7 @@ export const mockCandidates: Candidate[] = [
     name: "Sergio Fajardo",
     party: "Dignidad y Compromiso",
     color: "#059669",
+    photo: "/fajardo.jpeg",
     bio: "Matemático, exalcalde de Medellín y exgobernador de Antioquia. Referente del centro político, apuesta por la educación, la transparencia y la infraestructura social.",
     positions: {
       economia: {
@@ -307,6 +312,7 @@ export const mockCandidates: Candidate[] = [
     name: "Roy Barreras",
     party: "La Fuerza / Frente por la Vida",
     color: "#DC2626",
+    photo: "/roy-barreras.jpeg",
     bio: "Médico cirujano, exsenador y expresidente del Congreso. Pragmático de centro, impulsor de la vivienda social, la reforma de salud y el crecimiento económico.",
     positions: {
       economia: {

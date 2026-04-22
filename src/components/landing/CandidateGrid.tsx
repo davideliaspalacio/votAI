@@ -42,10 +42,14 @@ export function CandidateGrid() {
                   className="mb-3 flex size-14 items-center justify-center rounded-full"
                   style={{ backgroundColor: candidate.color + "20" }}
                 >
-                  <User
-                    className="size-7"
-                    style={{ color: candidate.color }}
-                  />
+                  {candidate.photo ? (
+                    <img src={candidate.photo} alt={candidate.name} className="size-full rounded-full object-cover" />
+                  ) : (
+                    <User
+                      className="size-7"
+                      style={{ color: candidate.color }}
+                    />
+                  )}
                 </div>
                 <h3 className="font-display text-sm font-bold text-text group-hover:text-primary transition-colors">
                   {candidate.name}

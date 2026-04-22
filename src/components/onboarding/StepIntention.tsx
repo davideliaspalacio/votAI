@@ -55,7 +55,11 @@ export function StepIntention({ value, onChange }: StepIntentionProps) {
                 className="flex size-8 shrink-0 items-center justify-center rounded-full"
                 style={{ backgroundColor: c.color + "20" }}
               >
-                <User className="size-4" style={{ color: c.color }} />
+                {c.photo ? (
+                  <img src={c.photo} alt={c.name} className="size-full rounded-full object-cover" />
+                ) : (
+                  <User className="size-4" style={{ color: c.color }} />
+                )}
               </div>
               <div>
                 <span className="font-display text-sm font-semibold">

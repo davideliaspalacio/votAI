@@ -184,7 +184,11 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                 className="flex size-20 items-center justify-center rounded-full"
                 style={{ backgroundColor: initialCandidate.color + "20" }}
               >
-                <User className="size-10" style={{ color: initialCandidate.color }} />
+                {initialCandidate.photo ? (
+                  <img src={initialCandidate.photo} alt={initialCandidate.name} className="size-full rounded-full object-cover" />
+                ) : (
+                  <User className="size-10" style={{ color: initialCandidate.color }} />
+                )}
               </div>
               <h3 className="font-display text-2xl font-bold text-text">
                 {initialCandidate.name}
@@ -272,7 +276,11 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                   className="flex size-24 items-center justify-center rounded-full"
                   style={{ backgroundColor: topCandidate.color + "20" }}
                 >
-                  <User className="size-12" style={{ color: topCandidate.color }} />
+                  {topCandidate.photo ? (
+                    <img src={topCandidate.photo} alt={topCandidate.name} className="size-full rounded-full object-cover" />
+                  ) : (
+                    <User className="size-12" style={{ color: topCandidate.color }} />
+                  )}
                 </div>
                 <h2 className="font-display text-3xl font-bold text-text">
                   {topCandidate.name}
@@ -390,7 +398,14 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                     className="flex size-6 shrink-0 items-center justify-center rounded-full"
                     style={{ backgroundColor: currentSlide.candidateColor + "20" }}
                   >
-                    <User className="size-3" style={{ color: currentSlide.candidateColor }} />
+                    {(() => {
+                      const slideCandidate = mockCandidates.find((c) => c.id === currentSlide.candidateId)
+                      return slideCandidate?.photo ? (
+                        <img src={slideCandidate.photo} alt={currentSlide.candidateName} className="size-full rounded-full object-cover" />
+                      ) : (
+                        <User className="size-3" style={{ color: currentSlide.candidateColor }} />
+                      )
+                    })()}
                   </div>
                   <p
                     className="text-xs font-bold uppercase tracking-wide"

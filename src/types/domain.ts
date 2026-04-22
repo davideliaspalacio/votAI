@@ -13,6 +13,7 @@ export interface Candidate {
   party: string
   color: string
   bio: string
+  photo?: string
   programPdfUrl?: string
   positions?: Partial<Record<Axis, CandidateAxisPosition>>
 }

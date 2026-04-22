@@ -373,10 +373,14 @@ export function ShareButton({
                           backgroundColor: item.candidate.color + "20",
                         }}
                       >
-                        <User
-                          className="size-4"
-                          style={{ color: item.candidate.color }}
-                        />
+                        {item.candidate.photo ? (
+                          <img src={item.candidate.photo} alt={item.candidate.name} className="size-full rounded-full object-cover" />
+                        ) : (
+                          <User
+                            className="size-4"
+                            style={{ color: item.candidate.color }}
+                          />
+                        )}
                       </div>
 
                       {/* Name & party */}
