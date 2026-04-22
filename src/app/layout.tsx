@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Space_Grotesk } from "next/font/google";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { ElectoralSilenceBanner } from "@/components/common/ElectoralSilenceBanner";
 import "./globals.css";
 
@@ -74,6 +76,8 @@ export default function RootLayout({
         <div id="main-content" className="relative z-10 flex flex-1 flex-col">
           {children}
         </div>
+        <Analytics />
+        <SpeedInsights />
         <Toaster
           position="top-right"
           toastOptions={{
