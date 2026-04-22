@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { AXIS_LABELS } from "@/types/domain"
-import { ShareStoryCard } from "./ShareStoryCard"
 import type { MatchResult, CandidateResult } from "@/types/domain"
 
 interface RevealProps {
@@ -40,7 +39,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   const [animatedScores, setAnimatedScores] = useState<number[]>([])
   const [axisIndex, setAxisIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
-  const storyCardRef = useRef<HTMLDivElement>(null)
 
   const allResults = useMemo(() => result.results, [result.results])
   const allCandidates = useMemo(() => allResults.map((r) => ({
@@ -165,25 +163,171 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
 
   // Candidato elegido si no está en top 3
   const initialNotInTop3 = !specialPreference && initialCandidate && !top3Results.find((r) => r.candidateId === initialCandidate.id)
+  const initialResult = initialNotInTop3 ? result.results.find((r) => r.candidateId === initialCandidate?.id) : null
+  const initialRank = initialResult ? result.results.findIndex((r) => r.candidateId === initialCandidate?.id) + 1 : 0
 
-  // Generar imagen capturando el componente ShareStoryCard
+  // Cargar foto de candidato como Image para canvas
+  const loadImg = (src: string): Promise<HTMLImageElement> =>
+    new Promise((resolve, reject) => {
+      const img = new Image()
+      img.crossOrigin = "anonymous"
+      img.onload = () => resolve(img)
+      img.onerror = reject
+      img.src = src
+    })
+
+  // Generar imagen story con fotos de candidatos
   const generateShareImage = useCallback(async (): Promise<Blob | null> => {
-    if (!storyCardRef.current) return null
     try {
-      const { toPng } = await import("html-to-image")
-      const dataUrl = await toPng(storyCardRef.current, {
-        width: 1080,
-        height: 1920,
-        pixelRatio: 1,
-        backgroundColor: "#0c0c18",
-      })
-      const res = await fetch(dataUrl)
-      return await res.blob()
+      const W = 540, scale = 2, pad = 32
+      const rowH = 90, rowGap = 12
+      const hasInit = initialNotInTop3 && initialCandidate && initialResult
+      const visibleCandidates = allCandidates.filter(
+        (item) => !(hasInit && item.candidateId === initialCandidate?.id)
+      )
+      const totalRows = visibleCandidates.length + (hasInit ? 1 : 0)
+      const H = 220 + totalRows * (rowH + rowGap) + (hasInit ? 50 : 0) + 100
+
+      const canvas = document.createElement("canvas")
+      canvas.width = W * scale; canvas.height = H * scale
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return null
+      ctx.scale(scale, scale)
+
+      const font = "system-ui, -apple-system, sans-serif"
+
+      // Fondo
+      const bg = ctx.createLinearGradient(0, 0, W, H)
+      bg.addColorStop(0, "#0c0c18"); bg.addColorStop(1, "#161630")
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+      // Barra decorativa
+      const acc = ctx.createLinearGradient(0, 0, W, 0)
+      acc.addColorStop(0, "#7c3aed"); acc.addColorStop(0.5, "#f59e0b"); acc.addColorStop(1, "#7c3aed")
+      ctx.fillStyle = acc; ctx.fillRect(0, 0, W, 5)
+
+      // Branding
+      const host = typeof window !== "undefined" ? window.location.host : ""
+      ctx.fillStyle = "#7c3aed"; ctx.font = `bold 28px ${font}`; ctx.textAlign = "center"
+      ctx.fillText("VotAI", W / 2, 45)
+      ctx.fillStyle = "#666"; ctx.font = `bold 13px ${font}`
+      ctx.fillText(host.toUpperCase(), W / 2, 68)
+
+      // Badge match/gap
+      const badgeText = isMatch ? "✓ Preferencia y afinidad coinciden" : "⚡ Preferencia y afinidad NO coinciden"
+      const badgeColor = isMatch ? "#22c55e" : "#f59e0b"
+      ctx.fillStyle = badgeColor; ctx.font = `bold 14px ${font}`
+      ctx.fillText(badgeText, W / 2, 100)
+
+      // Separador
+      ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
+      ctx.beginPath(); ctx.moveTo(pad + 20, 115); ctx.lineTo(W - pad - 20, 115); ctx.stroke()
+
+      let curY = 130
+      const cardX = pad, cardW = W - pad * 2
+
+      // Helper para dibujar una fila con foto
+      const drawCandRow = async (
+        y: number, rank: number, name: string, party: string,
+        color: string, photo: string | undefined, scoreVal: number,
+        isFirst: boolean, isDashed: boolean
+      ) => {
+        // Fondo tarjeta con rounded rect
+        ctx.beginPath(); ctx.roundRect(cardX, y, cardW, rowH, 14)
+        ctx.fillStyle = isFirst ? color + "18" : "#1a1a30"; ctx.fill()
+        ctx.strokeStyle = isFirst ? color + "50" : isDashed ? color + "50" : "#2a2a45"
+        ctx.lineWidth = isFirst ? 2 : 1
+        if (isDashed) ctx.setLineDash([8, 5])
+        ctx.stroke(); ctx.setLineDash([])
+
+        const cy = y + rowH / 2
+        const rowPad = 16
+
+        // Badge numero
+        ctx.beginPath(); ctx.arc(cardX + rowPad + 14, cy, 14, 0, Math.PI * 2)
+        ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"; ctx.fill()
+        ctx.fillStyle = "#fff"; ctx.font = `bold 14px ${font}`; ctx.textAlign = "center"
+        ctx.fillText(String(rank), cardX + rowPad + 14, cy + 5)
+
+        // Foto del candidato
+        const avatarX = cardX + rowPad + 42, avatarR = 18
+        ctx.beginPath(); ctx.arc(avatarX, cy, avatarR, 0, Math.PI * 2)
+        ctx.fillStyle = color + "25"; ctx.fill()
+
+        if (photo) {
+          try {
+            const img = await loadImg(photo)
+            ctx.save()
+            ctx.beginPath(); ctx.arc(avatarX, cy, avatarR - 1, 0, Math.PI * 2); ctx.clip()
+            ctx.drawImage(img, avatarX - avatarR + 1, cy - avatarR + 1, (avatarR - 1) * 2, (avatarR - 1) * 2)
+            ctx.restore()
+          } catch {
+            ctx.beginPath(); ctx.arc(avatarX, cy, 7, 0, Math.PI * 2)
+            ctx.fillStyle = color; ctx.fill()
+          }
+        } else {
+          ctx.beginPath(); ctx.arc(avatarX, cy, 7, 0, Math.PI * 2)
+          ctx.fillStyle = color; ctx.fill()
+        }
+
+        // Nombre
+        const textX = avatarX + avatarR + 12
+        ctx.textAlign = "left"; ctx.fillStyle = "#fff"
+        ctx.font = isFirst ? `bold 16px ${font}` : `500 15px ${font}`
+        ctx.fillText(name, textX, cy - 6)
+
+        // Partido
+        ctx.fillStyle = "#777"; ctx.font = `12px ${font}`
+        let p = party
+        const maxPW = cardW - (textX - cardX) - 60
+        while (ctx.measureText(p).width > maxPW && p.length > 5) p = p.slice(0, -4) + "..."
+        ctx.fillText(p, textX, cy + 12)
+
+        // Score
+        ctx.textAlign = "right"; ctx.fillStyle = isFirst ? "#7c3aed" : "#bbb"
+        ctx.font = isFirst ? `bold 26px ${font}` : `bold 20px ${font}`
+        ctx.fillText(`${scoreVal}%`, cardX + cardW - rowPad, cy + 7)
+      }
+
+      // Candidato elegido primero
+      if (hasInit && initialCandidate && initialResult) {
+        ctx.fillStyle = "#999"; ctx.font = `13px ${font}`; ctx.textAlign = "center"
+        ctx.fillText("Tu candidato elegido", W / 2, curY + 4)
+        curY += 16
+        await drawCandRow(curY, initialRank, initialCandidate.name, initialCandidate.party, initialCandidate.color, initialCandidate.photo, initialResult.score, false, true)
+        curY += rowH + rowGap + 8
+        ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
+        ctx.beginPath(); ctx.moveTo(pad + 20, curY); ctx.lineTo(W - pad - 20, curY); ctx.stroke()
+        curY += 12
+      }
+
+      // Titulo
+      ctx.fillStyle = "#999"; ctx.font = `13px ${font}`; ctx.textAlign = "center"
+      ctx.fillText("Ranking de afinidad programática", W / 2, curY + 4)
+      curY += 16
+
+      // Todos los candidatos
+      for (const item of visibleCandidates) {
+        if (!item.candidate) continue
+        const idx = allCandidates.indexOf(item)
+        await drawCandRow(curY, idx + 1, item.candidate.name, item.candidate.party, item.candidate.color, item.candidate.photo, item.score, idx === 0, false)
+        curY += rowH + rowGap
+      }
+
+      // CTA
+      ctx.textAlign = "center"; ctx.fillStyle = "#555"; ctx.font = `13px ${font}`
+      ctx.fillText("Descubre tu afinidad programática", W / 2, H - 55)
+      ctx.fillStyle = "#7c3aed"; ctx.font = `bold 15px ${font}`
+      ctx.fillText(host, W / 2, H - 35)
+      ctx.fillStyle = "#444"; ctx.font = `10px ${font}`
+      ctx.fillText("David E. Palacio · Ing. Software & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 15)
+
+      return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch (err) {
       console.error("Error generando imagen:", err)
       return null
     }
-  }, [])
+  }, [allCandidates, isMatch, initialNotInTop3, initialCandidate, initialResult, initialRank])
 
   const handleShareImage = useCallback(async () => {
     const blob = await generateShareImage()
@@ -211,6 +355,39 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     toast.success("Imagen descargada")
   }, [generateShareImage, topCandidate, topResult])
 
+  const handleDownloadImage = useCallback(async () => {
+    const blob = await generateShareImage()
+    if (!blob) { toast.error("No se pudo generar la imagen"); return }
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url; a.download = "votai-resultado.png"; a.click()
+    URL.revokeObjectURL(url)
+    toast.success("Imagen descargada")
+  }, [generateShareImage])
+
+  const handleInstagramStory = useCallback(async () => {
+    const blob = await generateShareImage()
+    if (!blob) { toast.error("No se pudo generar la imagen"); return }
+
+    // En móvil, usar Web Share API con la imagen (abre Instagram directo)
+    if (navigator.share) {
+      try {
+        const file = new File([blob], "votai-resultado.png", { type: "image/png" })
+        if (navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file] })
+          return
+        }
+      } catch { /* cancelled */ }
+    }
+
+    // Fallback: descargar y mostrar instrucciones
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url; a.download = "votai-resultado.png"; a.click()
+    URL.revokeObjectURL(url)
+    toast.success("Imagen descargada. Ábrela en Instagram → Historia → Sticker de link para agregar el URL", { duration: 6000 })
+  }, [generateShareImage])
+
   const handleStartAxes = useCallback(() => {
     if (axisSlides.length > 0) { setPhase("axes"); setAxisIndex(0) }
     else { setPhase("done"); onRevealComplete() }
@@ -232,14 +409,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
 
   return (
     <div className={`flex flex-col items-center justify-center px-4 py-12 ${phase === "done" ? "" : "min-h-[85vh]"}`}>
-      {/* Componente oculto para captura de imagen — formato story 1080x1920 */}
-      <ShareStoryCard
-        ref={storyCardRef}
-        results={result.results}
-        initialPreference={result.initial_preference}
-        preferenceMatch={result.preference_match}
-      />
-
       <AnimatePresence mode="wait">
         {/* Phase 1: Initial preference */}
         {phase === "initial" && !specialPreference && initialCandidate && (
@@ -385,7 +554,11 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
             >
               <Button variant="outline" size="sm" onClick={handleShareImage} className="gap-2 text-xs">
                 <Share2 className="size-3.5" />
-                Compartir imagen
+                Compartir
+              </Button>
+              <Button variant="outline" size="sm" onClick={handleInstagramStory} className="gap-2 text-xs">
+                <svg viewBox="0 0 24 24" fill="currentColor" className="size-3.5"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                Historia IG
               </Button>
             </motion.div>
 
