@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2, Download } from "lucide-react"
+import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { AXIS_LABELS } from "@/types/domain"
+import { ShareStoryCard } from "./ShareStoryCard"
 import type { MatchResult, CandidateResult } from "@/types/domain"
 
 interface RevealProps {
@@ -39,6 +40,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   const [animatedScores, setAnimatedScores] = useState<number[]>([])
   const [axisIndex, setAxisIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
+  const storyCardRef = useRef<HTMLDivElement>(null)
 
   const allResults = useMemo(() => result.results, [result.results])
   const allCandidates = useMemo(() => allResults.map((r) => ({
@@ -163,160 +165,25 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
 
   // Candidato elegido si no está en top 3
   const initialNotInTop3 = !specialPreference && initialCandidate && !top3Results.find((r) => r.candidateId === initialCandidate.id)
-  const initialResult = initialNotInTop3 ? result.results.find((r) => r.candidateId === initialCandidate?.id) : null
-  const initialRank = initialResult ? result.results.findIndex((r) => r.candidateId === initialCandidate?.id) + 1 : 0
 
-  // Helper para dibujar rounded rect
-  const drawRR = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
-    ctx.beginPath()
-    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y)
-    ctx.quadraticCurveTo(x + w, y, x + w, y + r)
-    ctx.lineTo(x + w, y + h - r)
-    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
-    ctx.lineTo(x + r, y + h)
-    ctx.quadraticCurveTo(x, y + h, x, y + h - r)
-    ctx.lineTo(x, y + r)
-    ctx.quadraticCurveTo(x, y, x + r, y)
-    ctx.closePath()
-  }
-
-  // Dibujar una fila de candidato (igual que el frontend mobile)
-  const drawCandidateRow = (
-    ctx: CanvasRenderingContext2D,
-    x: number, y: number, w: number, h: number,
-    rank: number, name: string, party: string, color: string, scoreVal: number,
-    isFirst: boolean, isDashed: boolean,
-  ) => {
-    // Fondo
-    ctx.fillStyle = isFirst ? color + "15" : "#1a1a30"
-    ctx.strokeStyle = isFirst ? color + "50" : isDashed ? color + "60" : "#2a2a45"
-    ctx.lineWidth = isFirst ? 2 : 1
-    if (isDashed) ctx.setLineDash([6, 4])
-    drawRR(ctx, x, y, w, h, 12)
-    ctx.fill(); ctx.stroke()
-    ctx.setLineDash([])
-
-    const cy = y + h / 2
-
-    // Badge numero
-    ctx.beginPath(); ctx.arc(x + 28, cy, 14, 0, Math.PI * 2)
-    ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"; ctx.fill()
-    ctx.fillStyle = "#fff"; ctx.font = "bold 14px system-ui, sans-serif"; ctx.textAlign = "center"
-    ctx.fillText(String(rank), x + 28, cy + 5)
-
-    // Circulo color
-    ctx.beginPath(); ctx.arc(x + 62, cy, 16, 0, Math.PI * 2)
-    ctx.fillStyle = color + "25"; ctx.fill()
-    ctx.beginPath(); ctx.arc(x + 62, cy, 6, 0, Math.PI * 2)
-    ctx.fillStyle = color; ctx.fill()
-
-    // Nombre y partido
-    ctx.textAlign = "left"; ctx.fillStyle = "#fff"
-    ctx.font = isFirst ? "bold 16px system-ui, sans-serif" : "500 15px system-ui, sans-serif"
-    ctx.fillText(name, x + 88, cy - 6)
-    ctx.fillStyle = "#777"; ctx.font = "12px system-ui, sans-serif"
-    let p = party
-    const mw = w - 88 - 65
-    while (ctx.measureText(p).width > mw && p.length > 5) p = p.slice(0, -4) + "..."
-    ctx.fillText(p, x + 88, cy + 12)
-
-    // Score
-    ctx.textAlign = "right"; ctx.fillStyle = isFirst ? "#7c3aed" : "#bbb"
-    ctx.font = isFirst ? "bold 26px system-ui, sans-serif" : "bold 20px system-ui, sans-serif"
-    ctx.fillText(`${scoreVal}%`, x + w - 16, cy + 7)
-  }
-
-  // Generar imagen — replica exacta del layout mobile del frontend
+  // Generar imagen capturando el componente ShareStoryCard
   const generateShareImage = useCallback(async (): Promise<Blob | null> => {
+    if (!storyCardRef.current) return null
     try {
-      const W = 540, scale = 2, pad = 28
-      const rowH = 64, rowGap = 10
-      const hasInitial = initialNotInTop3 && initialCandidate && initialResult
-      const totalRows = allCandidates.length
-      const H = 200 + totalRows * (rowH + rowGap) + (hasInitial ? 40 : 0) + 80
-
-      const canvas = document.createElement("canvas")
-      canvas.width = W * scale; canvas.height = H * scale
-      const ctx = canvas.getContext("2d")
-      if (!ctx) return null
-      ctx.scale(scale, scale)
-
-      // Fondo
-      const bg = ctx.createLinearGradient(0, 0, W, H)
-      bg.addColorStop(0, "#0c0c18"); bg.addColorStop(1, "#161630")
-      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
-
-      // Barra decorativa
-      const acc = ctx.createLinearGradient(0, 0, W, 0)
-      acc.addColorStop(0, "#7c3aed"); acc.addColorStop(0.5, "#f59e0b"); acc.addColorStop(1, "#7c3aed")
-      ctx.fillStyle = acc; ctx.fillRect(0, 0, W, 5)
-
-      // Branding
-      const host = typeof window !== "undefined" ? window.location.host : ""
-      ctx.fillStyle = "#666"; ctx.font = "bold 12px system-ui, sans-serif"; ctx.textAlign = "center"
-      ctx.fillText(host.toUpperCase(), W / 2, 35)
-
-      // Badge match/gap
-      const badgeText = isMatch ? "Tu preferencia y tu afinidad coinciden" : "Tu preferencia y tu afinidad NO coinciden"
-      const badgeColor = isMatch ? "#22c55e" : "#f59e0b"
-      const badgeW = ctx.measureText(badgeText).width + 40
-      ctx.font = "bold 12px system-ui, sans-serif"
-      drawRR(ctx, (W - badgeW) / 2, 48, badgeW, 28, 14)
-      ctx.fillStyle = badgeColor + "15"; ctx.fill()
-      ctx.strokeStyle = badgeColor + "40"; ctx.lineWidth = 1; ctx.stroke()
-      ctx.fillStyle = badgeColor; ctx.textAlign = "center"
-      ctx.fillText(badgeText, W / 2, 66)
-
-      // Subtitulo
-      ctx.fillStyle = "#999"; ctx.font = "14px system-ui, sans-serif"
-      ctx.fillText("Ranking de afinidad programática", W / 2, 102)
-
-      // Separador
-      ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
-      ctx.beginPath(); ctx.moveTo(pad + 20, 115); ctx.lineTo(W - pad - 20, 115); ctx.stroke()
-
-      let curY = 130
-      const cardX = pad, cardW = W - pad * 2
-
-      // Candidato elegido primero (si no está en top 3)
-      if (hasInitial && initialCandidate && initialResult) {
-        ctx.fillStyle = "#999"; ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "center"
-        ctx.fillText("Tu candidato elegido", W / 2, curY + 4)
-        curY += 16
-        drawCandidateRow(ctx, cardX, curY, cardW, rowH, initialRank, initialCandidate.name, initialCandidate.party, initialCandidate.color, initialResult.score, false, true)
-        curY += rowH + rowGap + 8
-
-        ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
-        ctx.beginPath(); ctx.moveTo(pad + 20, curY); ctx.lineTo(W - pad - 20, curY); ctx.stroke()
-        curY += 12
-
-        ctx.fillStyle = "#999"; ctx.font = "12px system-ui, sans-serif"
-        ctx.fillText("Ranking de afinidad programática", W / 2, curY + 4)
-        curY += 16
-      }
-
-      // All candidates
-      allCandidates.forEach((item, i) => {
-        if (!item.candidate) return
-        // Skip el elegido si ya lo mostramos arriba
-        if (hasInitial && item.candidateId === initialCandidate?.id) return
-        drawCandidateRow(ctx, cardX, curY, cardW, rowH, i + 1, item.candidate.name, item.candidate.party, item.candidate.color, item.score, i === 0, false)
-        curY += rowH + rowGap
+      const { toPng } = await import("html-to-image")
+      const dataUrl = await toPng(storyCardRef.current, {
+        width: 1080,
+        height: 1920,
+        pixelRatio: 1,
+        backgroundColor: "#0c0c18",
       })
-
-      // CTA
-      curY += 10
-      ctx.textAlign = "center"; ctx.fillStyle = "#555"; ctx.font = "13px system-ui, sans-serif"
-      ctx.fillText("Descubre tu afinidad programática", W / 2, curY)
-      ctx.fillStyle = "#7c3aed"; ctx.font = "bold 14px system-ui, sans-serif"
-      ctx.fillText(host, W / 2, curY + 20)
-
-      ctx.fillStyle = "#444"; ctx.font = "11px system-ui, sans-serif"
-      ctx.fillText("David E. Palacio · Ing. Software & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 14)
-
-      return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
-    } catch { return null }
-  }, [allCandidates, isMatch, initialNotInTop3, initialCandidate, initialResult, initialRank])
+      const res = await fetch(dataUrl)
+      return await res.blob()
+    } catch (err) {
+      console.error("Error generando imagen:", err)
+      return null
+    }
+  }, [])
 
   const handleShareImage = useCallback(async () => {
     const blob = await generateShareImage()
@@ -365,6 +232,14 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
 
   return (
     <div className={`flex flex-col items-center justify-center px-4 py-12 ${phase === "done" ? "" : "min-h-[85vh]"}`}>
+      {/* Componente oculto para captura de imagen — formato story 1080x1920 */}
+      <ShareStoryCard
+        ref={storyCardRef}
+        results={result.results}
+        initialPreference={result.initial_preference}
+        preferenceMatch={result.preference_match}
+      />
+
       <AnimatePresence mode="wait">
         {/* Phase 1: Initial preference */}
         {phase === "initial" && !specialPreference && initialCandidate && (
