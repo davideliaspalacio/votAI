@@ -2,7 +2,8 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { Check, Zap, User, ChevronLeft, ChevronRight, FileText } from "lucide-react"
+import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2, Download } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
 import { mockCandidates } from "@/lib/mock/candidates"
@@ -35,18 +36,19 @@ type Phase = "initial" | "transition" | "reveal" | "axes" | "done"
 export function Reveal({ result, onRevealComplete }: RevealProps) {
   const prefersReduced = useReducedMotion()
   const [phase, setPhase] = useState<Phase>(prefersReduced ? "reveal" : "initial")
-  const [animatedScores, setAnimatedScores] = useState([0, 0, 0])
+  const [animatedScores, setAnimatedScores] = useState<number[]>([])
   const [axisIndex, setAxisIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
 
-  const top3Results = useMemo(() => result.results.slice(0, 3), [result.results])
-  const top3Candidates = useMemo(() => top3Results.map((r) => ({
+  const allResults = useMemo(() => result.results, [result.results])
+  const allCandidates = useMemo(() => allResults.map((r) => ({
     ...r,
     candidate: mockCandidates.find((c) => c.id === r.candidateId),
-  })), [top3Results])
+  })), [allResults])
+  const top3Results = useMemo(() => result.results.slice(0, 3), [result.results])
   const topResult = result.results[0]
-  const topCandidate = top3Candidates[0]?.candidate
-  const scoreTargets = useRef(top3Results.map((r) => r.score))
+  const topCandidate = allCandidates[0]?.candidate
+  const scoreTargets = useRef(allResults.map((r) => r.score))
   const initialCandidate = mockCandidates.find(
     (c) => c.id === result.initial_preference
   )
@@ -116,7 +118,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   // Phase transitions
   useEffect(() => {
     if (prefersReduced) {
-      setAnimatedScores(scoreTargets.current)
+      setAnimatedScores([...scoreTargets.current])
       return
     }
     const t1 = setTimeout(() => setPhase("transition"), 3000)
@@ -128,10 +130,10 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   useEffect(() => {
     if (phase !== "reveal" || prefersReduced) return
     const targets = scoreTargets.current
-    const current = [0, 0, 0]
+    const current = new Array(targets.length).fill(0)
     const interval = setInterval(() => {
       let allDone = true
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < targets.length; i++) {
         if (current[i] < (targets[i] ?? 0)) {
           current[i] += 1
           allDone = false
@@ -158,6 +160,189 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     }, 8000)
     return () => clearInterval(interval)
   }, [phase, autoPlay, totalAxes, onRevealComplete])
+
+  // Candidato elegido si no está en top 3
+  const initialNotInTop3 = !specialPreference && initialCandidate && !top3Results.find((r) => r.candidateId === initialCandidate.id)
+  const initialResult = initialNotInTop3 ? result.results.find((r) => r.candidateId === initialCandidate?.id) : null
+  const initialRank = initialResult ? result.results.findIndex((r) => r.candidateId === initialCandidate?.id) + 1 : 0
+
+  // Helper para dibujar rounded rect
+  const drawRR = (ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) => {
+    ctx.beginPath()
+    ctx.moveTo(x + r, y); ctx.lineTo(x + w - r, y)
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r)
+    ctx.lineTo(x + w, y + h - r)
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h)
+    ctx.lineTo(x + r, y + h)
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r)
+    ctx.lineTo(x, y + r)
+    ctx.quadraticCurveTo(x, y, x + r, y)
+    ctx.closePath()
+  }
+
+  // Dibujar una fila de candidato (igual que el frontend mobile)
+  const drawCandidateRow = (
+    ctx: CanvasRenderingContext2D,
+    x: number, y: number, w: number, h: number,
+    rank: number, name: string, party: string, color: string, scoreVal: number,
+    isFirst: boolean, isDashed: boolean,
+  ) => {
+    // Fondo
+    ctx.fillStyle = isFirst ? color + "15" : "#1a1a30"
+    ctx.strokeStyle = isFirst ? color + "50" : isDashed ? color + "60" : "#2a2a45"
+    ctx.lineWidth = isFirst ? 2 : 1
+    if (isDashed) ctx.setLineDash([6, 4])
+    drawRR(ctx, x, y, w, h, 12)
+    ctx.fill(); ctx.stroke()
+    ctx.setLineDash([])
+
+    const cy = y + h / 2
+
+    // Badge numero
+    ctx.beginPath(); ctx.arc(x + 28, cy, 14, 0, Math.PI * 2)
+    ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"; ctx.fill()
+    ctx.fillStyle = "#fff"; ctx.font = "bold 14px system-ui, sans-serif"; ctx.textAlign = "center"
+    ctx.fillText(String(rank), x + 28, cy + 5)
+
+    // Circulo color
+    ctx.beginPath(); ctx.arc(x + 62, cy, 16, 0, Math.PI * 2)
+    ctx.fillStyle = color + "25"; ctx.fill()
+    ctx.beginPath(); ctx.arc(x + 62, cy, 6, 0, Math.PI * 2)
+    ctx.fillStyle = color; ctx.fill()
+
+    // Nombre y partido
+    ctx.textAlign = "left"; ctx.fillStyle = "#fff"
+    ctx.font = isFirst ? "bold 16px system-ui, sans-serif" : "500 15px system-ui, sans-serif"
+    ctx.fillText(name, x + 88, cy - 6)
+    ctx.fillStyle = "#777"; ctx.font = "12px system-ui, sans-serif"
+    let p = party
+    const mw = w - 88 - 65
+    while (ctx.measureText(p).width > mw && p.length > 5) p = p.slice(0, -4) + "..."
+    ctx.fillText(p, x + 88, cy + 12)
+
+    // Score
+    ctx.textAlign = "right"; ctx.fillStyle = isFirst ? "#7c3aed" : "#bbb"
+    ctx.font = isFirst ? "bold 26px system-ui, sans-serif" : "bold 20px system-ui, sans-serif"
+    ctx.fillText(`${scoreVal}%`, x + w - 16, cy + 7)
+  }
+
+  // Generar imagen — replica exacta del layout mobile del frontend
+  const generateShareImage = useCallback(async (): Promise<Blob | null> => {
+    try {
+      const W = 540, scale = 2, pad = 28
+      const rowH = 64, rowGap = 10
+      const hasInitial = initialNotInTop3 && initialCandidate && initialResult
+      const totalRows = allCandidates.length
+      const H = 200 + totalRows * (rowH + rowGap) + (hasInitial ? 40 : 0) + 80
+
+      const canvas = document.createElement("canvas")
+      canvas.width = W * scale; canvas.height = H * scale
+      const ctx = canvas.getContext("2d")
+      if (!ctx) return null
+      ctx.scale(scale, scale)
+
+      // Fondo
+      const bg = ctx.createLinearGradient(0, 0, W, H)
+      bg.addColorStop(0, "#0c0c18"); bg.addColorStop(1, "#161630")
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+
+      // Barra decorativa
+      const acc = ctx.createLinearGradient(0, 0, W, 0)
+      acc.addColorStop(0, "#7c3aed"); acc.addColorStop(0.5, "#f59e0b"); acc.addColorStop(1, "#7c3aed")
+      ctx.fillStyle = acc; ctx.fillRect(0, 0, W, 5)
+
+      // Branding
+      const host = typeof window !== "undefined" ? window.location.host : ""
+      ctx.fillStyle = "#666"; ctx.font = "bold 12px system-ui, sans-serif"; ctx.textAlign = "center"
+      ctx.fillText(host.toUpperCase(), W / 2, 35)
+
+      // Badge match/gap
+      const badgeText = isMatch ? "Tu preferencia y tu afinidad coinciden" : "Tu preferencia y tu afinidad NO coinciden"
+      const badgeColor = isMatch ? "#22c55e" : "#f59e0b"
+      const badgeW = ctx.measureText(badgeText).width + 40
+      ctx.font = "bold 12px system-ui, sans-serif"
+      drawRR(ctx, (W - badgeW) / 2, 48, badgeW, 28, 14)
+      ctx.fillStyle = badgeColor + "15"; ctx.fill()
+      ctx.strokeStyle = badgeColor + "40"; ctx.lineWidth = 1; ctx.stroke()
+      ctx.fillStyle = badgeColor; ctx.textAlign = "center"
+      ctx.fillText(badgeText, W / 2, 66)
+
+      // Subtitulo
+      ctx.fillStyle = "#999"; ctx.font = "14px system-ui, sans-serif"
+      ctx.fillText("Ranking de afinidad programática", W / 2, 102)
+
+      // Separador
+      ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
+      ctx.beginPath(); ctx.moveTo(pad + 20, 115); ctx.lineTo(W - pad - 20, 115); ctx.stroke()
+
+      let curY = 130
+      const cardX = pad, cardW = W - pad * 2
+
+      // Candidato elegido primero (si no está en top 3)
+      if (hasInitial && initialCandidate && initialResult) {
+        ctx.fillStyle = "#999"; ctx.font = "12px system-ui, sans-serif"; ctx.textAlign = "center"
+        ctx.fillText("Tu candidato elegido", W / 2, curY + 4)
+        curY += 16
+        drawCandidateRow(ctx, cardX, curY, cardW, rowH, initialRank, initialCandidate.name, initialCandidate.party, initialCandidate.color, initialResult.score, false, true)
+        curY += rowH + rowGap + 8
+
+        ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
+        ctx.beginPath(); ctx.moveTo(pad + 20, curY); ctx.lineTo(W - pad - 20, curY); ctx.stroke()
+        curY += 12
+
+        ctx.fillStyle = "#999"; ctx.font = "12px system-ui, sans-serif"
+        ctx.fillText("Ranking de afinidad programática", W / 2, curY + 4)
+        curY += 16
+      }
+
+      // All candidates
+      allCandidates.forEach((item, i) => {
+        if (!item.candidate) return
+        // Skip el elegido si ya lo mostramos arriba
+        if (hasInitial && item.candidateId === initialCandidate?.id) return
+        drawCandidateRow(ctx, cardX, curY, cardW, rowH, i + 1, item.candidate.name, item.candidate.party, item.candidate.color, item.score, i === 0, false)
+        curY += rowH + rowGap
+      })
+
+      // CTA
+      curY += 10
+      ctx.textAlign = "center"; ctx.fillStyle = "#555"; ctx.font = "13px system-ui, sans-serif"
+      ctx.fillText("Descubre tu afinidad programática", W / 2, curY)
+      ctx.fillStyle = "#7c3aed"; ctx.font = "bold 14px system-ui, sans-serif"
+      ctx.fillText(host, W / 2, curY + 20)
+
+      ctx.fillStyle = "#444"; ctx.font = "11px system-ui, sans-serif"
+      ctx.fillText("Construido por David Elias Palacio", W / 2, H - 14)
+
+      return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
+    } catch { return null }
+  }, [allCandidates, isMatch, initialNotInTop3, initialCandidate, initialResult, initialRank])
+
+  const handleShareImage = useCallback(async () => {
+    const blob = await generateShareImage()
+    if (!blob) { toast.error("No se pudo generar la imagen"); return }
+
+    if (navigator.share) {
+      try {
+        const file = new File([blob], "votai-resultado.png", { type: "image/png" })
+        const canShareFiles = navigator.canShare?.({ files: [file] })
+        const host = typeof window !== "undefined" ? window.location.host : ""
+        await navigator.share({
+          title: "Mi afinidad programática",
+          text: `Hice el test de afinidad en ${host} — mi mayor afinidad es con ${topCandidate?.name} (${topResult.score}%)`,
+          ...(canShareFiles ? { files: [file] } : {}),
+        })
+        return
+      } catch { /* cancelled */ }
+    }
+
+    // Fallback: download
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement("a")
+    a.href = url; a.download = "votai-resultado.png"; a.click()
+    URL.revokeObjectURL(url)
+    toast.success("Imagen descargada")
+  }, [generateShareImage, topCandidate, topResult])
 
   const handleStartAxes = useCallback(() => {
     if (axisSlides.length > 0) { setPhase("axes"); setAxisIndex(0) }
@@ -231,11 +416,46 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
               {isMatch ? (<><Check className="size-4" /> Tu preferencia y tu afinidad coinciden</>) : (<><Zap className="size-4" /> Tu preferencia y tu afinidad NO coinciden</>)}
             </div>
 
-            <p className="mb-6 text-sm text-text-muted">Tu top 3 de afinidad programática</p>
+            {/* Candidato elegido primero (si no está en top 3) */}
+            {initialNotInTop3 && initialCandidate && initialResult && (
+              <motion.div
+                initial={prefersReduced ? {} : { opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1, duration: 0.4 }}
+                className="mb-4 w-full"
+              >
+                <p className="mb-2 text-center text-xs text-text-subtle">Tu candidato elegido</p>
+                <div
+                  className="flex items-center gap-3 rounded-brutal border-2 border-dashed p-3"
+                  style={{ borderColor: initialCandidate.color + "60" }}
+                >
+                  <div
+                    className="flex size-10 shrink-0 items-center justify-center rounded-full"
+                    style={{ backgroundColor: initialCandidate.color + "20" }}
+                  >
+                    {initialCandidate.photo ? (
+                      <img src={initialCandidate.photo} alt={initialCandidate.name} className="size-full rounded-full object-cover" />
+                    ) : (
+                      <User className="size-5" style={{ color: initialCandidate.color }} />
+                    )}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="font-display text-sm font-bold text-text">{initialCandidate.name}</p>
+                    <p className="text-[10px] text-text-muted">{initialCandidate.party}</p>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <span className="font-display text-xl font-bold text-text-muted">{initialResult.score}%</span>
+                    <p className="text-[10px] text-text-subtle">Puesto #{initialRank}</p>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
-            {/* Top 3 cards */}
-            <div className="grid w-full gap-4 sm:grid-cols-3">
-              {top3Candidates.map((item, i) => {
+            <p className="mb-4 text-sm text-text-muted">Ranking de afinidad programática</p>
+
+            {/* All candidates — compact rows */}
+            <div className="w-full space-y-2.5">
+              {allCandidates.map((item, i) => {
                 if (!item.candidate) return null
                 const isFirst = i === 0
                 return (
@@ -243,81 +463,56 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                     key={item.candidateId}
                     initial={prefersReduced ? {} : { opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.2, duration: 0.5 }}
-                    className={`flex flex-col items-center gap-3 rounded-brutal border-2 p-6 ${isFirst ? "" : "border-surface-border bg-surface"}`}
-                    style={isFirst ? { borderColor: item.candidate.color, boxShadow: `4px 4px 0px 0px ${item.candidate.color}` } : undefined}
+                    transition={{ delay: i * 0.15, duration: 0.4 }}
+                    className={`flex items-center gap-3 rounded-brutal border-2 p-3 ${isFirst ? "" : "border-surface-border bg-surface"}`}
+                    style={isFirst ? { borderColor: item.candidate.color, boxShadow: `3px 3px 0px 0px ${item.candidate.color}` } : undefined}
                   >
                     {/* Position badge */}
-                    <span className={`flex size-7 items-center justify-center rounded-full font-display text-xs font-bold ${isFirst ? "bg-primary text-primary-foreground" : "bg-surface-border text-text-subtle"}`}>
+                    <span className={`flex size-6 shrink-0 items-center justify-center rounded-full font-display text-[10px] font-bold ${isFirst ? "bg-primary text-primary-foreground" : "bg-surface-border text-text-subtle"}`}>
                       {i + 1}
                     </span>
 
                     {/* Avatar */}
                     <div
-                      className={`flex items-center justify-center rounded-full ${isFirst ? "size-20" : "size-14"}`}
+                      className={`flex shrink-0 items-center justify-center rounded-full ${isFirst ? "size-10" : "size-8"}`}
                       style={{ backgroundColor: item.candidate.color + "20" }}
                     >
                       {item.candidate.photo ? (
                         <img src={item.candidate.photo} alt={item.candidate.name} className="size-full rounded-full object-cover" />
                       ) : (
-                        <User className={isFirst ? "size-10" : "size-7"} style={{ color: item.candidate.color }} />
+                        <User className={isFirst ? "size-5" : "size-4"} style={{ color: item.candidate.color }} />
                       )}
                     </div>
 
-                    {/* Name */}
-                    <h2 className={`font-display font-bold text-text ${isFirst ? "text-xl" : "text-base"}`}>
-                      {item.candidate.name}
-                    </h2>
-                    <p className="text-xs text-text-muted">{item.candidate.party}</p>
+                    {/* Name + party */}
+                    <div className="min-w-0 flex-1">
+                      <p className={`font-display font-bold text-text ${isFirst ? "text-sm" : "text-xs"}`}>
+                        {item.candidate.name}
+                      </p>
+                      <p className="text-[10px] text-text-muted">{item.candidate.party}</p>
+                    </div>
 
                     {/* Score */}
-                    <div className={`font-display font-bold text-primary ${isFirst ? "text-4xl" : "text-2xl"}`}>
-                      {animatedScores[i]}%
+                    <div className={`shrink-0 font-display font-bold text-primary ${isFirst ? "text-xl" : "text-base"}`}>
+                      {animatedScores[i] ?? 0}%
                     </div>
                   </motion.div>
                 )
               })}
             </div>
 
-            {/* Candidato elegido si no está en top 3 */}
-            {!specialPreference && initialCandidate && !top3Results.find((r) => r.candidateId === initialCandidate.id) && (() => {
-              const initialResult = result.results.find((r) => r.candidateId === initialCandidate.id)
-              if (!initialResult) return null
-              const rank = result.results.findIndex((r) => r.candidateId === initialCandidate.id) + 1
-              return (
-                <motion.div
-                  initial={prefersReduced ? {} : { opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8, duration: 0.5 }}
-                  className="mt-6 w-full"
-                >
-                  <p className="mb-3 text-center text-xs text-text-subtle">Tu candidato elegido</p>
-                  <div
-                    className="flex items-center gap-4 rounded-brutal border-2 border-dashed p-4"
-                    style={{ borderColor: initialCandidate.color + "60" }}
-                  >
-                    <div
-                      className="flex size-12 shrink-0 items-center justify-center rounded-full"
-                      style={{ backgroundColor: initialCandidate.color + "20" }}
-                    >
-                      {initialCandidate.photo ? (
-                        <img src={initialCandidate.photo} alt={initialCandidate.name} className="size-full rounded-full object-cover" />
-                      ) : (
-                        <User className="size-6" style={{ color: initialCandidate.color }} />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-display text-sm font-bold text-text">{initialCandidate.name}</p>
-                      <p className="text-xs text-text-muted">{initialCandidate.party}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="font-display text-xl font-bold text-text-muted">{initialResult.score}%</p>
-                      <p className="text-[10px] text-text-subtle">Puesto #{rank}</p>
-                    </div>
-                  </div>
-                </motion.div>
-              )
-            })()}
+            {/* Share image button */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.7 }}
+              className="mt-4 flex justify-center gap-2"
+            >
+              <Button variant="outline" size="sm" onClick={handleShareImage} className="gap-2 text-xs">
+                <Share2 className="size-3.5" />
+                Compartir imagen
+              </Button>
+            </motion.div>
 
             {/* Gap explanation */}
             {!isMatch && !specialPreference && (
