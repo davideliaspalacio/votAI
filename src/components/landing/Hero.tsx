@@ -35,12 +35,26 @@ export function Hero() {
       </div>
 
       <div className="mx-auto max-w-4xl text-center">
+        {/* Mascota */}
         <motion.div
           {...animate}
-          transition={{ duration: 0.5 }}
+          transition={{ duration: 0.6 }}
+          className="mb-8"
+        >
+          <motion.img
+            src="/votolocoimage.png"
+            alt="VotAI"
+            className="mx-auto size-32 sm:size-40 md:size-48 drop-shadow-2xl"
+            animate={prefersReduced ? {} : { y: [0, -8, 0] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+          />
+        </motion.div>
+
+        <motion.div
+          {...animate}
+          transition={{ duration: 0.5, delay: 0.1 }}
         >
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-sm text-text-muted">
-            <img src="/votolocoimage.png" alt="" className="size-5" />
             Elecciones Colombia 2026
           </div>
         </motion.div>
@@ -48,7 +62,7 @@ export function Hero() {
         <motion.h1
           className="font-display text-4xl font-bold leading-tight tracking-tight text-text sm:text-5xl md:text-display-xl"
           {...animate}
-          transition={{ duration: 0.5, delay: 0.1 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
         >
           ¿Estás seguro por quién{" "}
           <span className="text-primary">vas a votar?</span>
@@ -57,7 +71,7 @@ export function Hero() {
         <motion.p
           className="mx-auto mt-6 max-w-2xl text-lg text-text-muted md:text-xl"
           {...animate}
-          transition={{ duration: 0.5, delay: 0.2 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
         >
           Responde 10 preguntas y descubre si tu candidato realmente representa
           lo que piensas. Sin sesgos, sin enredos.
@@ -66,7 +80,7 @@ export function Hero() {
         <motion.div
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
           {...animate}
-          transition={{ duration: 0.5, delay: 0.3 }}
+          transition={{ duration: 0.5, delay: 0.4 }}
         >
           <Link href="/onboarding">
             <Button variant="brutal" size="lg" className="gap-2 px-8 py-6 text-lg">
@@ -80,7 +94,7 @@ export function Hero() {
           <motion.p
             className="mt-6 text-sm text-text-subtle"
             {...animate}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.5 }}
           >
             <span className="font-display font-semibold text-primary">
               {formatNumber(sessionCount)}+
