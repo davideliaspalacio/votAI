@@ -74,11 +74,6 @@ export function Hero() {
               <ArrowRight className="size-5" />
             </Button>
           </Link>
-          <Link href="/resultados/demo">
-            <Button variant="outline" size="lg" className="gap-2 px-6 py-6 text-sm">
-              Ver demo de resultados
-            </Button>
-          </Link>
         </motion.div>
 
         {sessionCount !== null && sessionCount > 0 && (
