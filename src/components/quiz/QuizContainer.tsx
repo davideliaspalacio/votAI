@@ -109,7 +109,7 @@ export function QuizContainer() {
       }
 
   return (
-    <div className="flex min-h-dvh flex-col px-4 py-6">
+    <div className="flex min-h-dvh flex-col px-4 pb-32 pt-6">
       {/* Progress */}
       <div className="mx-auto w-full max-w-2xl">
         <QuizProgressBar
@@ -120,8 +120,8 @@ export function QuizContainer() {
       </div>
 
       {/* Question */}
-      <div className="flex flex-1 items-center justify-center py-8">
-        <div className="w-full max-w-2xl">
+      <div className="flex flex-1 py-8">
+        <div className="w-full max-w-2xl mx-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={currentQuestion.id}
@@ -151,50 +151,51 @@ export function QuizContainer() {
         </div>
       </div>
 
-      {/* Navigation */}
-      <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
-        <Button
-          variant="ghost"
-          onClick={handlePrev}
-          disabled={currentIndex === 0}
-          className="gap-2"
-        >
-          <ArrowLeft className="size-4" />
-          Anterior
-        </Button>
+      {/* Navigation — fixed at bottom */}
+      <div className="fixed inset-x-0 bottom-0 z-30 border-t border-surface-border bg-background/90 backdrop-blur-md px-4 py-4">
+        <div className="mx-auto flex w-full max-w-2xl items-center justify-between gap-4">
+          <Button
+            variant="ghost"
+            onClick={handlePrev}
+            disabled={currentIndex === 0}
+            className="gap-2"
+          >
+            <ArrowLeft className="size-4" />
+            Anterior
+          </Button>
 
-        {isLast && isComplete() ? (
-          <Button
-            variant="brutal"
-            onClick={handleSubmit}
-            disabled={submitting}
-            className="gap-2"
-          >
-            {submitting ? (
-              <>
-                <Loader2 className="size-4 animate-spin" />
-                Enviando...
-              </>
-            ) : (
-              "Ver resultados"
-            )}
-          </Button>
-        ) : (
-          <Button
-            variant="brutal"
-            onClick={handleNext}
-            disabled={!canGoNext}
-            className="gap-2"
-          >
-            Siguiente
-            <ArrowRight className="size-4" />
-          </Button>
-        )}
+          {isLast && isComplete() ? (
+            <Button
+              variant="brutal"
+              onClick={handleSubmit}
+              disabled={submitting}
+              className="gap-2"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="size-4 animate-spin" />
+                  Enviando...
+                </>
+              ) : (
+                "Ver resultados"
+              )}
+            </Button>
+          ) : (
+            <Button
+              variant="brutal"
+              onClick={handleNext}
+              disabled={!canGoNext}
+              className="gap-2"
+            >
+              Siguiente
+              <ArrowRight className="size-4" />
+            </Button>
+          )}
+        </div>
+        <p className="mt-2 text-center text-xs text-text-subtle">
+          Usa las teclas 1-5 para responder, ← → para navegar
+        </p>
       </div>
-
-      <p className="mt-4 text-center text-xs text-text-subtle">
-        Usa las teclas 1-5 para responder, ← → para navegar
-      </p>
     </div>
   )
 }
