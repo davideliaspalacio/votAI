@@ -79,7 +79,15 @@ export function LegalFooter() {
               {" — "}Ingeniero de Software &amp; IA
             </p>
             <p>
-              Ricardo Palacio — Estratega de Producto &amp; Visión
+              <a
+                href="https://www.instagram.com/richarpalacio/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted transition-colors hover:text-primary"
+              >
+                Ricardo Palacio
+              </a>
+              {" — "}Estratega de Producto &amp; Visión
             </p>
           </div>
         </div>
