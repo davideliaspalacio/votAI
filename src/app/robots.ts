@@ -4,7 +4,7 @@ export default function robots(): MetadataRoute.Robots {
   return {
     rules: {
       userAgent: "*",
-      allow: "/",
+      allow: ["/", "/api/og"],
       disallow: ["/api/", "/analyzing"],
     },
     sitemap: "https://vot-ai.vercel.app/sitemap.xml",
