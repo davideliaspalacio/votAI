@@ -292,7 +292,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
       // Candidato elegido primero
       if (hasInit && initialCandidate && initialResult) {
         ctx.fillStyle = "#999"; ctx.font = `13px ${font}`; ctx.textAlign = "center"
-        ctx.fillText("Tu candidato elegido", W / 2, curY + 4)
+        ctx.fillText("Candidato que escogiste antes de hacer el test", W / 2, curY + 4)
         curY += 16
         await drawCandRow(curY, initialRank, initialCandidate.name, initialCandidate.party, initialCandidate.color, initialCandidate.photo, initialResult.score, false, true)
         curY += rowH + rowGap + 8
@@ -303,7 +303,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
 
       // Titulo
       ctx.fillStyle = "#999"; ctx.font = `13px ${font}`; ctx.textAlign = "center"
-      ctx.fillText("Ranking de afinidad programática", W / 2, curY + 4)
+      ctx.fillText("Candidatos con los que tienes afinidad asociado a su plan de gobierno", W / 2, curY + 4)
       curY += 16
 
       // Todos los candidatos
@@ -468,7 +468,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                 transition={{ delay: 0.1, duration: 0.4 }}
                 className="mb-4 w-full"
               >
-                <p className="mb-2 text-center text-xs text-text-subtle">Tu candidato elegido</p>
+                <p className="mb-2 text-center text-xs text-text-subtle">Candidato que escogiste antes de hacer el test</p>
                 <div
                   className="flex items-center gap-3 rounded-brutal border-2 border-dashed p-3"
                   style={{ borderColor: initialCandidate.color + "60" }}
@@ -495,7 +495,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
               </motion.div>
             )}
 
-            <p className="mb-4 text-sm text-text-muted">Ranking de afinidad programática</p>
+            <p className="mb-4 text-sm text-text-muted">Candidatos con los que tienes afinidad asociado a su plan de gobierno</p>
 
             {/* All candidates — compact rows */}
             <div className="w-full space-y-2.5">

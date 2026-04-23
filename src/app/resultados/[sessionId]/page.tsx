@@ -121,6 +121,7 @@ export default function ResultsPage() {
                 score={topResult.score}
                 sessionId={sessionId}
                 topResults={result.results}
+                initialPreference={result.initial_preference}
               />
             </section>
           )}

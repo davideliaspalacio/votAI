@@ -19,6 +19,7 @@ interface ShareButtonProps {
   score: number
   sessionId: string
   topResults?: CandidateResult[]
+  initialPreference?: string
 }
 
 function getAffinityMessage(score: number): string {
@@ -66,6 +67,7 @@ export function ShareButton({
   score,
   sessionId,
   topResults,
+  initialPreference,
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false)
   const prefersReduced = useReducedMotion()
@@ -85,12 +87,24 @@ export function ShareButton({
       })
     : null
 
+  const allRanked = topResults
+    ? topResults.map((r) => ({
+        ...r,
+        candidate: mockCandidates.find((mc) => mc.id === r.candidateId),
+      }))
+    : []
+
+  const specialPref = ["undecided", "blank", "na"].includes(initialPreference ?? "")
+  const initialCand = !specialPref ? mockCandidates.find((c) => c.id === initialPreference) : null
+  const initialInRanking = initialCand && allRanked.find((t) => t.candidateId === initialCand.id)
+  const showInitial = !!initialCand && !!initialInRanking
+
   const generateImage = useCallback(async (): Promise<Blob | null> => {
-    if (!top3 || top3.length === 0) return null
+    if (!allRanked || allRanked.length === 0) return null
     try {
-      // Formato story-friendly (1080x1350 a escala 1x, renderizado a 2x)
       const W = 540
-      const H = 680
+      const rowCount = allRanked.length
+      const H = (showInitial ? 280 : 165) + rowCount * 90 + 80
       const scale = 2
       const pad = 32
       const canvas = document.createElement("canvas")
@@ -139,19 +153,59 @@ export function ShareButton({
       ctx.lineTo(W - pad - 20, 140)
       ctx.stroke()
 
-      // Top 3 candidatos
-      const startY = 165
-      const rowH = 120
+      const rowH = 75
+      const rowGap = 10
       const rowPad = 16
+      let curY = 165
+      const cardX = pad
+      const cardW = W - pad * 2
 
-      top3.forEach((item, i) => {
+      // Candidato elegido primero (si no está en ranking #1)
+      if (showInitial && initialCand && initialInRanking) {
+        ctx.fillStyle = "#999999"
+        ctx.font = "13px system-ui, -apple-system, sans-serif"
+        ctx.textAlign = "center"
+        ctx.fillText("Candidato que escogiste antes de hacer el test", W / 2, curY - 5)
+        curY += 8
+
+        ctx.beginPath(); ctx.roundRect(cardX, curY, cardW, 70, 14)
+        ctx.fillStyle = "#1a1a30"; ctx.fill()
+        ctx.strokeStyle = initialCand.color + "50"; ctx.lineWidth = 2
+        ctx.setLineDash([8, 5]); ctx.stroke(); ctx.setLineDash([])
+
+        const cy = curY + 35
+        ctx.beginPath(); ctx.arc(cardX + rowPad + 20, cy, 16, 0, Math.PI * 2)
+        ctx.fillStyle = initialCand.color + "25"; ctx.fill()
+        ctx.beginPath(); ctx.arc(cardX + rowPad + 20, cy, 6, 0, Math.PI * 2)
+        ctx.fillStyle = initialCand.color; ctx.fill()
+
+        ctx.textAlign = "left"; ctx.fillStyle = "#ffffff"
+        ctx.font = "500 15px system-ui, -apple-system, sans-serif"
+        ctx.fillText(initialCand.name, cardX + rowPad + 46, cy - 4)
+        ctx.fillStyle = "#777777"; ctx.font = "11px system-ui, -apple-system, sans-serif"
+        ctx.fillText(initialCand.party, cardX + rowPad + 46, cy + 12)
+
+        ctx.textAlign = "right"; ctx.fillStyle = "#999999"
+        ctx.font = "bold 18px system-ui, -apple-system, sans-serif"
+        ctx.fillText(`${initialInRanking.score}%`, cardX + cardW - rowPad, cy + 6)
+
+        curY += 85
+        ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
+        ctx.beginPath(); ctx.moveTo(pad + 20, curY); ctx.lineTo(W - pad - 20, curY); ctx.stroke()
+        curY += 15
+      }
+
+      // Titulo ranking
+      ctx.fillStyle = "#999999"; ctx.font = "13px system-ui, -apple-system, sans-serif"
+      ctx.textAlign = "center"
+      ctx.fillText("Candidatos con los que tienes afinidad asociado a su plan de gobierno", W / 2, curY)
+      curY += 15
+
+      // TODOS los candidatos
+      allRanked.forEach((item, i) => {
         if (!item.candidate) return
-        const y = startY + i * (rowH + 12)
         const isFirst = i === 0
-        const cardX = pad
-        const cardW = W - pad * 2
 
-        // Fondo de la tarjeta
         if (isFirst) {
           ctx.fillStyle = item.candidate.color + "18"
           ctx.strokeStyle = item.candidate.color + "50"
@@ -161,73 +215,57 @@ export function ShareButton({
           ctx.strokeStyle = "#2a2a45"
           ctx.lineWidth = 1
         }
-        drawRoundedRect(ctx, cardX, y, cardW, rowH, 14)
+        drawRoundedRect(ctx, cardX, curY, cardW, rowH, 14)
         ctx.fill()
         ctx.stroke()
 
-        // Numero de posicion
-        const badgeX = cardX + rowPad
-        const centerY = y + rowH / 2
-        ctx.beginPath()
-        ctx.arc(badgeX + 16, centerY, 16, 0, Math.PI * 2)
-        ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"
-        ctx.fill()
-        ctx.fillStyle = "#ffffff"
-        ctx.font = "bold 15px system-ui, -apple-system, sans-serif"
-        ctx.textAlign = "center"
-        ctx.fillText(String(i + 1), badgeX + 16, centerY + 5)
+        const centerY = curY + rowH / 2
 
-        // Circulo de color del candidato
-        const avatarX = badgeX + 48
-        ctx.beginPath()
-        ctx.arc(avatarX, centerY, 18, 0, Math.PI * 2)
-        ctx.fillStyle = item.candidate.color + "25"
-        ctx.fill()
-        ctx.beginPath()
-        ctx.arc(avatarX, centerY, 7, 0, Math.PI * 2)
-        ctx.fillStyle = item.candidate.color
-        ctx.fill()
+        // Badge numero
+        const badgeX = cardX + rowPad
+        ctx.beginPath(); ctx.arc(badgeX + 14, centerY, 14, 0, Math.PI * 2)
+        ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"; ctx.fill()
+        ctx.fillStyle = "#ffffff"
+        ctx.font = "bold 13px system-ui, -apple-system, sans-serif"
+        ctx.textAlign = "center"
+        ctx.fillText(String(i + 1), badgeX + 14, centerY + 5)
+
+        // Circulo color
+        const avatarX = badgeX + 42
+        ctx.beginPath(); ctx.arc(avatarX, centerY, 16, 0, Math.PI * 2)
+        ctx.fillStyle = item.candidate.color + "25"; ctx.fill()
+        ctx.beginPath(); ctx.arc(avatarX, centerY, 6, 0, Math.PI * 2)
+        ctx.fillStyle = item.candidate.color; ctx.fill()
 
         // Nombre y partido
-        const textX = avatarX + 30
-        ctx.textAlign = "left"
-        ctx.fillStyle = "#ffffff"
-        ctx.font = isFirst
-          ? "bold 17px system-ui, -apple-system, sans-serif"
-          : "500 16px system-ui, -apple-system, sans-serif"
-        ctx.fillText(item.candidate.name, textX, centerY - 8)
-
-        ctx.fillStyle = "#777777"
-        ctx.font = "13px system-ui, -apple-system, sans-serif"
-        const maxPartyW = cardW - (textX - cardX) - 70
+        const textX = avatarX + 26
+        ctx.textAlign = "left"; ctx.fillStyle = "#ffffff"
+        ctx.font = isFirst ? "bold 15px system-ui, -apple-system, sans-serif" : "500 14px system-ui, -apple-system, sans-serif"
+        ctx.fillText(item.candidate.name, textX, centerY - 6)
+        ctx.fillStyle = "#777777"; ctx.font = "11px system-ui, -apple-system, sans-serif"
         let party = item.candidate.party
-        while (ctx.measureText(party).width > maxPartyW && party.length > 5) {
-          party = party.slice(0, -4) + "..."
-        }
-        ctx.fillText(party, textX, centerY + 14)
+        const maxPW = cardW - (textX - cardX) - 60
+        while (ctx.measureText(party).width > maxPW && party.length > 5) party = party.slice(0, -4) + "..."
+        ctx.fillText(party, textX, centerY + 12)
 
         // Score
         ctx.textAlign = "right"
         ctx.fillStyle = isFirst ? "#7c3aed" : "#bbbbbb"
-        ctx.font = isFirst
-          ? "bold 28px system-ui, -apple-system, sans-serif"
-          : "bold 22px system-ui, -apple-system, sans-serif"
-        ctx.fillText(`${item.score}%`, cardX + cardW - rowPad, centerY + 8)
+        ctx.font = isFirst ? "bold 22px system-ui, -apple-system, sans-serif" : "bold 18px system-ui, -apple-system, sans-serif"
+        ctx.fillText(`${item.score}%`, cardX + cardW - rowPad, centerY + 6)
+
+        curY += rowH + rowGap
       })
 
       // CTA
-      const ctaY = startY + 3 * (rowH + 12) + 20
-      ctx.textAlign = "center"
-      ctx.fillStyle = "#555555"
+      curY += 5
+      ctx.textAlign = "center"; ctx.fillStyle = "#555555"
       ctx.font = "13px system-ui, -apple-system, sans-serif"
-      ctx.fillText("Descubre tu afinidad programatica", W / 2, ctaY)
-      ctx.fillStyle = "#7c3aed"
-      ctx.font = "bold 14px system-ui, -apple-system, sans-serif"
-      ctx.fillText(host, W / 2, ctaY + 22)
+      ctx.fillText("Descubre tu afinidad programática", W / 2, curY)
+      ctx.fillStyle = "#7c3aed"; ctx.font = "bold 14px system-ui, -apple-system, sans-serif"
+      ctx.fillText(host, W / 2, curY + 22)
 
-      // Credito
-      ctx.fillStyle = "#444444"
-      ctx.font = "11px system-ui, -apple-system, sans-serif"
+      ctx.fillStyle = "#444444"; ctx.font = "11px system-ui, -apple-system, sans-serif"
       ctx.fillText("David E. Palacio · Desarrollador & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 18)
 
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
@@ -235,7 +273,7 @@ export function ShareButton({
       console.error("Error generando imagen:", err)
       return null
     }
-  }, [top3, affinityMessage])
+  }, [allRanked, affinityMessage, showInitial, initialCand, initialInRanking])
 
   const handleShare = async () => {
     if (navigator.share) {
