@@ -1,19 +1,11 @@
-"use client"
-
 import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
+import Image from "next/image"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { shuffleArray } from "@/lib/utils"
-import { useState, useEffect } from "react"
 import { User } from "lucide-react"
 
 export function CandidateGrid() {
-  const prefersReduced = useReducedMotion()
-  const [candidates, setCandidates] = useState(mockCandidates)
-
-  useEffect(() => {
-    setCandidates(shuffleArray(mockCandidates))
-  }, [])
+  const candidates = shuffleArray(mockCandidates)
 
   return (
     <section className="px-4 py-16 md:py-24">
@@ -27,12 +19,10 @@ export function CandidateGrid() {
 
         <div className="mt-12 grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4">
           {candidates.map((candidate, i) => (
-            <motion.div
+            <div
               key={candidate.id}
-              initial={prefersReduced ? {} : { opacity: 0, scale: 0.95 }}
-              whileInView={prefersReduced ? {} : { opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.3, delay: i * 0.05 }}
+              className="animate-fade-up"
+              style={{ animationDelay: `${i * 0.05}s` }}
             >
               <Link
                 href={`/candidato/${candidate.slug}`}
@@ -43,7 +33,13 @@ export function CandidateGrid() {
                   style={{ backgroundColor: candidate.color + "20" }}
                 >
                   {candidate.photo ? (
-                    <img src={candidate.photo} alt={candidate.name} className="size-full rounded-full object-cover" />
+                    <Image
+                      src={candidate.photo}
+                      alt={candidate.name}
+                      width={56}
+                      height={56}
+                      className="size-full rounded-full object-cover"
+                    />
                   ) : (
                     <User
                       className="size-7"
@@ -58,7 +54,7 @@ export function CandidateGrid() {
                   {candidate.party}
                 </p>
               </Link>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

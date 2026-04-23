@@ -1,28 +1,10 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import Link from "next/link"
-import { motion, useReducedMotion } from "framer-motion"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { ArrowRight } from "lucide-react"
-import { formatNumber } from "@/lib/utils"
-import { api } from "@/lib/api"
+import { SessionCounter } from "./SessionCounter"
 
 export function Hero() {
-  const prefersReduced = useReducedMotion()
-  const [sessionCount, setSessionCount] = useState<number | null>(null)
-
-  useEffect(() => {
-    api
-      .getSessionCount()
-      .then((data) => setSessionCount(data.total_sessions))
-      .catch(() => setSessionCount(null))
-  }, [])
-
-  const animate = prefersReduced
-    ? {}
-    : { initial: { opacity: 0, y: 20 }, animate: { opacity: 1, y: 0 } }
-
   return (
     <section className="relative overflow-hidden px-4 pb-16 pt-20 md:pb-24 md:pt-32">
       {/* Background glow */}
@@ -36,51 +18,42 @@ export function Hero() {
 
       <div className="mx-auto max-w-4xl text-center">
         {/* Mascota */}
-        <motion.div
-          {...animate}
-          transition={{ duration: 0.6 }}
-          className="mb-8"
-        >
-          <motion.img
+        <div className="mb-8 animate-fade-up">
+          <Image
             src="/votolocoimage.png"
             alt="VotAI"
-            className="mx-auto size-32 sm:size-40 md:size-48 drop-shadow-2xl"
-            animate={prefersReduced ? {} : { y: [0, -8, 0] }}
-            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            width={192}
+            height={192}
+            priority
+            className="mx-auto size-32 sm:size-40 md:size-48 drop-shadow-2xl animate-float"
           />
-        </motion.div>
+        </div>
 
-        <motion.div
-          {...animate}
-          transition={{ duration: 0.5, delay: 0.1 }}
-        >
+        <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-sm text-text-muted">
             Elecciones Colombia 2026
           </div>
-        </motion.div>
+        </div>
 
-        <motion.h1
-          className="font-display text-4xl font-bold leading-tight tracking-tight text-text sm:text-5xl md:text-display-xl"
-          {...animate}
-          transition={{ duration: 0.5, delay: 0.2 }}
+        <h1
+          className="font-display text-4xl font-bold leading-tight tracking-tight text-text sm:text-5xl md:text-display-xl animate-fade-up"
+          style={{ animationDelay: "0.2s" }}
         >
           ¿Estás seguro por quién{" "}
           <span className="text-primary">vas a votar?</span>
-        </motion.h1>
+        </h1>
 
-        <motion.p
-          className="mx-auto mt-6 max-w-2xl text-lg text-text-muted md:text-xl"
-          {...animate}
-          transition={{ duration: 0.5, delay: 0.3 }}
+        <p
+          className="mx-auto mt-6 max-w-2xl text-lg text-text-muted md:text-xl animate-fade-up"
+          style={{ animationDelay: "0.3s" }}
         >
           Responde 10 preguntas y descubre si tu candidato realmente representa
           lo que piensas. Sin sesgos, sin enredos.
-        </motion.p>
+        </p>
 
-        <motion.div
-          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-          {...animate}
-          transition={{ duration: 0.5, delay: 0.4 }}
+        <div
+          className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-up"
+          style={{ animationDelay: "0.4s" }}
         >
           <Link href="/onboarding">
             <Button variant="brutal" size="lg" className="gap-2 px-8 py-6 text-lg">
@@ -88,20 +61,9 @@ export function Hero() {
               <ArrowRight className="size-5" />
             </Button>
           </Link>
-        </motion.div>
+        </div>
 
-        {sessionCount !== null && sessionCount > 0 && (
-          <motion.p
-            className="mt-6 text-sm text-text-subtle"
-            {...animate}
-            transition={{ duration: 0.5, delay: 0.5 }}
-          >
-            <span className="font-display font-semibold text-primary">
-              {formatNumber(sessionCount)}+
-            </span>{" "}
-            colombianos ya descubrieron su afinidad programática
-          </motion.p>
-        )}
+        <SessionCounter />
       </div>
     </section>
   )

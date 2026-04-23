@@ -1,6 +1,3 @@
-"use client"
-
-import { motion, useReducedMotion } from "framer-motion"
 import { ClipboardList, Brain, BarChart3 } from "lucide-react"
 
 const steps = [
@@ -25,8 +22,6 @@ const steps = [
 ]
 
 export function HowItWorks() {
-  const prefersReduced = useReducedMotion()
-
   return (
     <section className="border-t border-surface-border bg-surface/30 px-4 py-16 md:py-24">
       <div className="mx-auto max-w-5xl">
@@ -39,13 +34,10 @@ export function HowItWorks() {
 
         <div className="mt-12 grid gap-6 md:grid-cols-3">
           {steps.map((step, i) => (
-            <motion.div
+            <div
               key={step.title}
-              className="brutal-card p-6"
-              initial={prefersReduced ? {} : { opacity: 0, y: 20 }}
-              whileInView={prefersReduced ? {} : { opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
-              transition={{ duration: 0.4, delay: i * 0.15 }}
+              className="brutal-card p-6 animate-fade-up"
+              style={{ animationDelay: `${i * 0.15}s` }}
             >
               <div className="mb-4 flex size-12 items-center justify-center rounded-brutal bg-primary/10">
                 <step.icon className="size-6 text-primary" />
@@ -59,7 +51,7 @@ export function HowItWorks() {
               <p className="text-sm leading-relaxed text-text-muted">
                 {step.description}
               </p>
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>
