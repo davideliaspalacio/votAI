@@ -87,4 +87,9 @@ export const api = {
     if (USE_MOCKS) return mockStats
     return fetcher<PublicStats>("/api/stats/public")
   },
+
+  getSessionCount: async (): Promise<{ total_sessions: number }> => {
+    if (USE_MOCKS) return { total_sessions: 535 }
+    return fetcher<{ total_sessions: number }>("/api/stats/count")
+  },
 }

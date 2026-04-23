@@ -14,8 +14,8 @@ export function Hero() {
 
   useEffect(() => {
     api
-      .getPublicStats()
-      .then((stats) => setSessionCount(stats.total_sessions))
+      .getSessionCount()
+      .then((data) => setSessionCount(data.total_sessions))
       .catch(() => setSessionCount(null))
   }, [])
 
