@@ -20,6 +20,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://vot-ai.vercel.app"),
   title: {
     default: "VotAI - 10 preguntas. Tu candidato real. Sin enredos.",
     template: "%s | VotAI",
@@ -30,24 +31,46 @@ export const metadata: Metadata = {
     "elecciones Colombia 2026",
     "candidatos presidenciales",
     "afinidad programática",
-    "test político",
-    "propuestas candidatos",
+    "test político Colombia",
+    "propuestas candidatos 2026",
+    "Iván Cepeda",
+    "Abelardo de la Espriella",
+    "Paloma Valencia",
+    "Claudia López",
+    "Sergio Fajardo",
+    "Roy Barreras",
+    "voto en blanco",
+    "elecciones presidenciales Colombia",
   ],
-  authors: [{ name: "VotAI" }],
+  authors: [{ name: "David Elias Palacio" }],
+  creator: "David Elias Palacio",
+  publisher: "VotAI",
+  alternates: {
+    canonical: "https://vot-ai.vercel.app",
+  },
   openGraph: {
     type: "website",
     locale: "es_CO",
     url: "https://vot-ai.vercel.app",
     siteName: "VotAI",
-    title: "VotAI - 10 preguntas. Tu candidato real. Sin enredos.",
+    title: "VotAI - ¿Estás seguro por quién vas a votar?",
     description:
-      "Descubre qué candidato se alinea con lo que piensas. Test de afinidad programática basado en propuestas reales.",
+      "Responde 10 preguntas y descubre qué candidato presidencial de Colombia 2026 se alinea con lo que piensas. Basado en propuestas reales. No es una encuesta.",
+    images: [
+      {
+        url: "/api/og",
+        width: 1200,
+        height: 630,
+        alt: "VotAI - Test de afinidad programática Colombia 2026",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VotAI - Tu candidato real en 10 preguntas",
+    title: "VotAI - ¿Estás seguro por quién vas a votar?",
     description:
-      "Descubre tu afinidad programática con los candidatos presidenciales de Colombia 2026.",
+      "Responde 10 preguntas y descubre tu afinidad con los candidatos presidenciales de Colombia 2026.",
+    images: ["/api/og"],
   },
   robots: { index: true, follow: true },
 };
@@ -56,6 +79,28 @@ export const viewport: Viewport = {
   themeColor: "#0B0B0F",
   width: "device-width",
   initialScale: 1,
+};
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: "VotAI",
+  url: "https://vot-ai.vercel.app",
+  description:
+    "Test de afinidad programática para las elecciones presidenciales de Colombia 2026. Responde 10 preguntas y descubre qué candidato se alinea con lo que piensas.",
+  applicationCategory: "UtilitiesApplication",
+  operatingSystem: "All",
+  author: {
+    "@type": "Person",
+    name: "David Elias Palacio",
+    url: "https://www.davidpalacio.dev/",
+  },
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  inLanguage: "es-CO",
 };
 
 export default function RootLayout({
@@ -69,6 +114,10 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} dark`}
     >
       <body className="min-h-dvh flex flex-col noise-bg">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <a href="#main-content" className="skip-link">
           Ir al contenido principal
         </a>
