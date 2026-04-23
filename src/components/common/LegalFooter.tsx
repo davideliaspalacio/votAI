@@ -76,7 +76,7 @@ export function LegalFooter() {
               >
                 David Elias Palacio
               </a>
-              {" — "}Ingeniero de Software &amp; IA
+              {" — "}Desarrollador de Software &amp; IA
             </p>
             <p>
               <a
