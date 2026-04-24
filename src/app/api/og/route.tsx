@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="https://vot-ai.vercel.app/votolocoimage.png"
-            alt="VotAI"
+            alt="VotoLoco"
             width={40}
             height={40}
           />
@@ -44,7 +44,7 @@ export async function GET(request: NextRequest) {
               color: "#FFDE3A",
             }}
           >
-            VotAI
+            VotoLoco
           </div>
         </div>
 

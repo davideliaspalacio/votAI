@@ -20,7 +20,7 @@ export function Disclaimer({ variant = "compact", className }: DisclaimerProps) 
       >
         <Info className="mt-0.5 size-4 shrink-0 text-primary" />
         <p>
-          VotAI <strong className="text-text">NO</strong> es una encuesta electoral.
+          VotoLoco <strong className="text-text">NO</strong> es una encuesta electoral.
           Mide afinidad entre tus respuestas y las propuestas oficiales publicadas
           por cada candidato. No predice resultados electorales.
         </p>
@@ -43,7 +43,7 @@ export function Disclaimer({ variant = "compact", className }: DisclaimerProps) 
         </h3>
       </div>
       <p>
-        VotAI <strong className="text-text">NO</strong> es una encuesta
+        VotoLoco <strong className="text-text">NO</strong> es una encuesta
         electoral. Esta herramienta mide la afinidad programática entre tus
         respuestas y las propuestas oficiales publicadas por cada candidato.
       </p>

@@ -286,7 +286,7 @@ export function ShareButton({
         const canShareFiles = files && navigator.canShare?.({ files })
 
         await navigator.share({
-          title: "Mi afinidad programatica \u2014 VotAI",
+          title: "Mi afinidad programatica \u2014 VotoLoco",
           text: shareText,
           url: shareUrl,
           ...(canShareFiles ? { files } : {}),
@@ -366,7 +366,7 @@ export function ShareButton({
           {/* Preview Card */}
           <div className="rounded-brutal border-2 border-surface-border bg-background p-3 sm:p-5">
             <p className="mb-2 text-center text-[10px] font-bold uppercase tracking-widest text-text-subtle sm:text-xs sm:mb-3">
-              VotAI
+              VotoLoco
             </p>
 
             <p className="mb-3 text-center font-display text-xs font-medium text-text-muted sm:text-sm sm:mb-4">
@@ -454,7 +454,7 @@ export function ShareButton({
             )}
 
             <p className="mt-3 text-center text-[10px] text-text-subtle sm:text-xs sm:mt-4">
-              Descubre tu afinidad programatica en VotAI
+              Descubre tu afinidad programatica en VotoLoco
             </p>
           </div>
 

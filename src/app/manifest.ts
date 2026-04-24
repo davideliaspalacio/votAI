@@ -2,8 +2,8 @@ import type { MetadataRoute } from "next"
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "VotAI - Test de Afinidad Programática",
-    short_name: "VotAI",
+    name: "VotoLoco - Test de Afinidad Programática",
+    short_name: "VotoLoco",
     description:
       "Descubre qué candidato presidencial de Colombia 2026 se alinea con lo que piensas.",
     start_url: "/",

@@ -209,7 +209,7 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
       // Branding
       const host = typeof window !== "undefined" ? window.location.host : ""
       ctx.fillStyle = "#7c3aed"; ctx.font = `bold 28px ${font}`; ctx.textAlign = "center"
-      ctx.fillText("VotAI", W / 2, 45)
+      ctx.fillText("VotoLoco", W / 2, 45)
       ctx.fillStyle = "#666"; ctx.font = `bold 13px ${font}`
       ctx.fillText(host.toUpperCase(), W / 2, 68)
 

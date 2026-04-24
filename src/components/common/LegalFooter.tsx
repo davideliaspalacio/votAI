@@ -8,9 +8,9 @@ export function LegalFooter() {
           {/* Brand */}
           <div className="space-y-3">
             <Link href="/" className="flex items-center gap-2">
-              <img src="/votolocoimage.png" alt="VotAI" className="size-10" />
+              <img src="/votolocoimage.png" alt="VotoLoco" className="size-10" />
               <span className="font-display text-xl font-bold text-text">
-                VotAI
+                VotoLoco
               </span>
             </Link>
             <p className="text-sm text-text-muted">
@@ -63,7 +63,7 @@ export function LegalFooter() {
 
         <div className="mt-8 border-t border-surface-border pt-6 text-center text-xs text-text-subtle space-y-2">
           <p>
-            © {new Date().getFullYear()} VotAI. Herramienta de afinidad
+            © {new Date().getFullYear()} VotoLoco. Herramienta de afinidad
             programática. No es una encuesta. No predice resultados electorales.
           </p>
           <div className="space-y-1">

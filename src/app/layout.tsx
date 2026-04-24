@@ -22,8 +22,8 @@ const spaceGrotesk = Space_Grotesk({
 export const metadata: Metadata = {
   metadataBase: new URL("https://vot-ai.vercel.app"),
   title: {
-    default: "VotAI - 10 preguntas. Tu candidato real. Sin enredos.",
-    template: "%s | VotAI",
+    default: "VotoLoco - 10 preguntas. Tu candidato real. Sin enredos.",
+    template: "%s | VotoLoco",
   },
   description:
     "Descubre qué candidato presidencial de Colombia 2026 se alinea con lo que piensas. Test de afinidad programática basado en propuestas reales. No es una encuesta.",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "David Elias Palacio" }],
   creator: "David Elias Palacio",
-  publisher: "VotAI",
+  publisher: "VotoLoco",
   alternates: {
     canonical: "https://vot-ai.vercel.app",
   },
@@ -52,8 +52,8 @@ export const metadata: Metadata = {
     type: "website",
     locale: "es_CO",
     url: "https://vot-ai.vercel.app",
-    siteName: "VotAI",
-    title: "VotAI - ¿Estás seguro por quién vas a votar?",
+    siteName: "VotoLoco",
+    title: "VotoLoco - ¿Estás seguro por quién vas a votar?",
     description:
       "Responde 10 preguntas y descubre qué candidato presidencial de Colombia 2026 se alinea con lo que piensas. Basado en propuestas reales. No es una encuesta.",
     images: [
@@ -61,13 +61,13 @@ export const metadata: Metadata = {
         url: "/api/og",
         width: 1200,
         height: 630,
-        alt: "VotAI - Test de afinidad programática Colombia 2026",
+        alt: "VotoLoco - Test de afinidad programática Colombia 2026",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "VotAI - ¿Estás seguro por quién vas a votar?",
+    title: "VotoLoco - ¿Estás seguro por quién vas a votar?",
     description:
       "Responde 10 preguntas y descubre tu afinidad con los candidatos presidenciales de Colombia 2026.",
     images: ["/api/og"],
@@ -84,7 +84,7 @@ export const viewport: Viewport = {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  name: "VotAI",
+  name: "VotoLoco",
   url: "https://vot-ai.vercel.app",
   description:
     "Test de afinidad programática para las elecciones presidenciales de Colombia 2026. Responde 10 preguntas y descubre qué candidato se alinea con lo que piensas.",

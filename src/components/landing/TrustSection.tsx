@@ -30,7 +30,7 @@ export function TrustSection() {
           No es una encuesta
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-center text-text-muted">
-          VotAI mide afinidad programática entre tus respuestas y las
+          VotoLoco mide afinidad programática entre tus respuestas y las
           propuestas reales de cada candidato. Nada más, nada menos.
         </p>
 

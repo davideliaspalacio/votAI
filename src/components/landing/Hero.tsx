@@ -21,7 +21,7 @@ export function Hero() {
         <div className="mb-8 animate-fade-up">
           <Image
             src="/votolocoimage.png"
-            alt="VotAI"
+            alt="VotoLoco"
             width={192}
             height={192}
             priority

@@ -20,7 +20,7 @@ interface AggregateAffinityProps {
 
 export function AggregateAffinity({ data, total }: AggregateAffinityProps) {
   const prefersReduced = useReducedMotion()
-  const MIN_N = 1000
+  const MIN_N = 1
 
   if (total < MIN_N) {
     return (

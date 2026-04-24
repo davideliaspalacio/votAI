@@ -1,10 +1,10 @@
-# VotAI - Test de Afinidad Programatica
+# VotoLoco - Test de Afinidad Programatica
 
 **Descubre con cual candidato presidencial coincides mas, segun sus propuestas reales.**
 
-VotAI es una plataforma civica colombiana para las elecciones presidenciales de 2026. Responde 10 preguntas sobre los temas que importan y el sistema compara tus respuestas con las propuestas oficiales de cada candidato.
+VotoLoco es una plataforma civica colombiana para las elecciones presidenciales de 2026. Responde 10 preguntas sobre los temas que importan y el sistema compara tus respuestas con las propuestas oficiales de cada candidato.
 
-> **Importante:** VotAI NO es una encuesta electoral. No pregunta por quien vas a votar. Mide que tan parecido piensas a cada candidato basandose en sus programas de gobierno.
+> **Importante:** VotoLoco NO es una encuesta electoral. No pregunta por quien vas a votar. Mide que tan parecido piensas a cada candidato basandose en sus programas de gobierno.
 
 ---
 
@@ -115,6 +115,6 @@ NEXT_PUBLIC_ELECTORAL_SILENCE=false
 
 ## Nota legal
 
-VotAI es una herramienta educativa y civica. Mide afinidad programatica, no intencion de voto. No esta afiliada a ningun partido politico ni candidato. Las posiciones de los candidatos se extraen de sus programas de gobierno oficiales y son verificables con numero de pagina.
+VotoLoco es una herramienta educativa y civica. Mide afinidad programatica, no intencion de voto. No esta afiliada a ningun partido politico ni candidato. Las posiciones de los candidatos se extraen de sus programas de gobierno oficiales y son verificables con numero de pagina.
 
 Desarrollado en Colombia para Colombia.

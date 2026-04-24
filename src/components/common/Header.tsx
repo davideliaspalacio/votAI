@@ -28,9 +28,9 @@ export function Header() {
     <header className="sticky top-0 z-40 border-b border-surface-border bg-background/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between px-4">
         <Link href="/" className="flex items-center gap-2">
-          <img src="/votolocoimage.png" alt="VotAI" className="size-8" />
+          <img src="/votolocoimage.png" alt="VotoLoco" className="size-8" />
           <span className="font-display text-lg font-bold text-text">
-            VotAI
+            VotoLoco
           </span>
         </Link>
 
@@ -70,9 +70,9 @@ export function Header() {
             <div className="flex h-full flex-col px-2 pt-6">
               {/* Logo */}
               <div className="mb-8 flex items-center gap-2 px-3">
-                <img src="/votolocoimage.png" alt="VotAI" className="size-8" />
+                <img src="/votolocoimage.png" alt="VotoLoco" className="size-8" />
                 <span className="font-display text-lg font-bold text-text">
-                  VotAI
+                  VotoLoco
                 </span>
               </div>
 
