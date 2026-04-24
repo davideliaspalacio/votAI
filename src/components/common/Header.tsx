@@ -9,7 +9,6 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 const baseLinks = [
   { href: "/", label: "Inicio" },
   { href: "/metodologia", label: "Metodología" },
-  { href: "/comparar", label: "Comparar" },
 ]
 
 export function Header() {
