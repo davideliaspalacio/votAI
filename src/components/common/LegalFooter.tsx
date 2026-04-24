@@ -61,57 +61,7 @@ export function LegalFooter() {
           </div>
         </div>
 
-        <div className="mt-8 border-t border-surface-border pt-6 text-center text-xs text-text-subtle space-y-2">
-          <p>
-            © {new Date().getFullYear()} VotoLoco. Herramienta de afinidad
-            programática. No es una encuesta. No predice resultados electorales.
-          </p>
-          <div className="space-y-1">
-            <p>
-              <a
-                href="https://www.davidpalacio.dev/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted transition-colors hover:text-primary"
-              >
-                David Elias Palacio G.
-              </a>
-              {" — "}Desarrollador de Software &amp; IA
-            </p>
-            <p>
-              <a
-                href="https://www.instagram.com/richarpalacio/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted transition-colors hover:text-primary"
-              >
-                Ricardo Palacio B.
-              </a>
-              {" — "}Estratega de Producto &amp; Visión
-            </p>
-            <p>
-              <a
-                href="https://www.instagram.com/oscarmass/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted transition-colors hover:text-primary"
-              >
-                Oscar Mass P.
-              </a>
-              {" — "}Consultor 
-            </p>
-            <p>
-              <a
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted transition-colors hover:text-primary"
-              >
-               Julio Cesar Novoa F.
-              </a>
-              {" — "}Consultor 
-            </p>
-          </div>
-        </div>
+
       </div>
     </footer>
   )
