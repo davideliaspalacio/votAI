@@ -74,7 +74,7 @@ export function LegalFooter() {
                 rel="noopener noreferrer"
                 className="text-text-muted transition-colors hover:text-primary"
               >
-                David Elias Palacio
+                David Elias Palacio G.
               </a>
               {" — "}Desarrollador de Software &amp; IA
             </p>
@@ -85,9 +85,30 @@ export function LegalFooter() {
                 rel="noopener noreferrer"
                 className="text-text-muted transition-colors hover:text-primary"
               >
-                Ricardo Palacio
+                Ricardo Palacio B.
               </a>
               {" — "}Estratega de Producto &amp; Visión
+            </p>
+            <p>
+              <a
+                href="https://www.instagram.com/oscarmass/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted transition-colors hover:text-primary"
+              >
+                Oscar Mass P.
+              </a>
+              {" — "}Consultor 
+            </p>
+            <p>
+              <a
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted transition-colors hover:text-primary"
+              >
+               Julio Cesar Novoa F.
+              </a>
+              {" — "}Consultor 
             </p>
           </div>
         </div>

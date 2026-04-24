@@ -13,7 +13,7 @@ export default function MetodologiaPage() {
   return (
     <div className="flex flex-1 flex-col">
       <Header />
-      <article className="mx-auto max-w-3xl flex-1 px-4 py-12">
+      <article className="mx-auto max-w-3xl flex-1 px-4 py-12 text-justify">
         <h1 className="font-display text-display-sm font-bold text-text md:text-display-md">
           Metodología
         </h1>
@@ -71,7 +71,7 @@ export default function MetodologiaPage() {
             </h2>
             <p>
               VotoLoco <strong className="text-text">NO</strong> es una encuesta
-              electoral y <strong className="text-text">NO</strong> está
+              electoral y <strong className="text-text">NO </strong> está
               registrada ante el Consejo Nacional Electoral (CNE) porque no lo
               es. Una encuesta electoral mide intención de voto preguntando
               directamente &ldquo;¿por quién va a votar?&rdquo;. VotoLoco mide

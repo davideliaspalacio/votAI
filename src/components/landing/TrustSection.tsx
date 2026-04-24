@@ -26,7 +26,7 @@ export function TrustSection() {
   return (
     <section className="border-t border-surface-border bg-surface/30 px-4 py-16 md:py-24">
       <div className="mx-auto max-w-5xl">
-        <h2 className="text-center font-display text-display-sm font-bold text-text md:text-display-md">
+        <h2 className="text-center font-display text-display-lg font-bold leading-tight tracking-tight text-primary sm:text-display-xl md:text-[4.5rem] md:leading-[1.05]">
           No es una encuesta
         </h2>
         <p className="mx-auto mt-4 max-w-2xl text-center text-text-muted">

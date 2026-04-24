@@ -5,7 +5,7 @@ const steps = [
     icon: ClipboardList,
     title: "Responde",
     description:
-      "10 preguntas sobre los temas que importan: economía, salud, seguridad, ambiente y más. Indica qué tan importante es cada tema para ti.",
+      "10 preguntas sobre los temas que importan: economía, salud, seguridad, ambiente, entre otros. Indica qué tan importante es cada tema para ti.",
   },
   {
     icon: Brain,
