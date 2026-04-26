@@ -2,17 +2,10 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2, Download, Smartphone } from "lucide-react"
+import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2 } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { AXIS_LABELS } from "@/types/domain"
 import type { MatchResult, CandidateResult } from "@/types/domain"
@@ -46,9 +39,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   const [animatedScores, setAnimatedScores] = useState<number[]>([])
   const [axisIndex, setAxisIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
-  const [showInstagramModal, setShowInstagramModal] = useState(false)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-  const previewBlobRef = useRef<Blob | null>(null)
 
   const allResults = useMemo(() => result.results, [result.results])
   const allCandidates = useMemo(() => allResults.map((r) => ({
@@ -135,13 +125,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     const t2 = setTimeout(() => setPhase("reveal"), 4500)
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [prefersReduced])
-
-  // Cleanup preview URL al desmontar
-  useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl)
-    }
-  }, [previewUrl])
 
   // Animate scores
   useEffect(() => {
@@ -548,67 +531,40 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     toast.success("Imagen descargada")
   }, [generateShareImage])
 
-  // Detectar dispositivo móvil
-  const isMobileDevice = useCallback((): boolean => {
-    if (typeof navigator === "undefined") return false
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
-  }, [])
-
   const handleInstagramStory = useCallback(async () => {
-    const isMobile = isMobileDevice()
     const blob = await generateShareImage()
     if (!blob) { toast.error("No se pudo generar la imagen"); return }
 
-    // MÓVIL: Web Share API directa para abrir Instagram
-    if (isMobile && navigator.share) {
+    const host = typeof window !== "undefined" ? window.location.host : ""
+    const file = new File([blob], "votoloco-historia.png", { type: "image/png" })
+
+    // Intentar Web Share API (abre menú nativo donde aparece Instagram en móvil)
+    if (navigator.share) {
       try {
-        const file = new File([blob], "votoloco-historia.png", { type: "image/png" })
-        if (navigator.canShare?.({ files: [file] })) {
-          toast.info("Abriendo menú de compartir... selecciona Instagram", { duration: 3000 })
-          await navigator.share({
-            title: "Mi afinidad programática",
-            files: [file],
-          })
-          return
-        }
-      } catch (err) {
-        // Usuario canceló o hubo error
-        const errorName = (err as Error)?.name
-        if (errorName !== "AbortError") {
-          toast.error("No se pudo compartir. Descarga la imagen manualmente.")
-        }
+        const canShareFiles = navigator.canShare?.({ files: [file] })
+        await navigator.share({
+          title: "Mi afinidad programática — VotoLoco",
+          text: `Hice el test en ${host} — descubre el tuyo`,
+          ...(canShareFiles ? { files: [file] } : {}),
+        })
         return
+      } catch (err) {
+        const errorName = (err as Error)?.name
+        // Si el usuario canceló, no hacer nada
+        if (errorName === "AbortError") return
+        // Si no se pudo compartir por otra razón, caer al fallback
       }
     }
 
-    // DESKTOP: mostrar modal con preview e instrucciones
-    if (previewUrl) URL.revokeObjectURL(previewUrl)
-    const url = URL.createObjectURL(blob)
-    previewBlobRef.current = blob
-    setPreviewUrl(url)
-    setShowInstagramModal(true)
-  }, [generateShareImage, isMobileDevice, previewUrl])
-
-  const handleDownloadFromModal = useCallback(() => {
-    const blob = previewBlobRef.current
-    if (!blob) return
+    // Fallback: descargar la imagen
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
     a.href = url
     a.download = "votoloco-historia.png"
     a.click()
     URL.revokeObjectURL(url)
-    toast.success("Imagen descargada. Súbela a tu historia desde Instagram en tu celular.")
-  }, [])
-
-  const handleCloseInstagramModal = useCallback(() => {
-    setShowInstagramModal(false)
-    if (previewUrl) {
-      URL.revokeObjectURL(previewUrl)
-      setPreviewUrl(null)
-    }
-    previewBlobRef.current = null
-  }, [previewUrl])
+    toast.success("Imagen descargada — súbela a tu historia desde Instagram", { duration: 5000 })
+  }, [generateShareImage])
 
   const handleStartAxes = useCallback(() => {
     if (axisSlides.length > 0) { setPhase("axes"); setAxisIndex(0) }
@@ -914,69 +870,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Modal de Instagram para desktop */}
-      <Dialog open={showInstagramModal} onOpenChange={(open) => { if (!open) handleCloseInstagramModal() }}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <svg viewBox="0 0 24 24" fill="currentColor" className="size-5 text-primary">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
-              </svg>
-              Compartir en Instagram Stories
-            </DialogTitle>
-            <DialogDescription>
-              Instagram solo permite subir historias desde el celular. Sigue estos pasos:
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="grid gap-4 sm:grid-cols-[1fr_1.5fr]">
-            {/* Preview de la imagen */}
-            {previewUrl && (
-              <div className="flex items-center justify-center">
-                <div className="overflow-hidden rounded-brutal border-2 border-surface-border">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={previewUrl}
-                    alt="Preview de la historia"
-                    className="h-auto w-full max-w-[200px] object-contain"
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Instrucciones */}
-            <ol className="flex flex-col gap-3 text-sm text-text-muted">
-              <li className="flex items-start gap-2">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">1</span>
-                <span><strong className="text-text">Descarga la imagen</strong> con el botón de abajo.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">2</span>
-                <span className="flex items-center gap-1.5"><Smartphone className="size-3.5 shrink-0" /><strong className="text-text">Abre Instagram</strong> en tu celular.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">3</span>
-                <span>Crea una <strong className="text-text">nueva historia</strong> y selecciona la imagen descargada.</span>
-              </li>
-              <li className="flex items-start gap-2">
-                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">4</span>
-                <span>Agrega el <strong className="text-text">sticker de link</strong> con la URL de VotoLoco para que tus amigos también prueben.</span>
-              </li>
-            </ol>
-          </div>
-
-          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
-            <Button variant="outline" size="sm" onClick={handleCloseInstagramModal}>
-              Cerrar
-            </Button>
-            <Button variant="brutal" size="sm" onClick={handleDownloadFromModal} className="gap-2">
-              <Download className="size-4" />
-              Descargar imagen
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
