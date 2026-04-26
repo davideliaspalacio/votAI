@@ -2,10 +2,17 @@
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2 } from "lucide-react"
+import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2, Download, Smartphone } from "lucide-react"
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { AXIS_LABELS } from "@/types/domain"
 import type { MatchResult, CandidateResult } from "@/types/domain"
@@ -39,6 +46,9 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
   const [animatedScores, setAnimatedScores] = useState<number[]>([])
   const [axisIndex, setAxisIndex] = useState(0)
   const [autoPlay, setAutoPlay] = useState(true)
+  const [showInstagramModal, setShowInstagramModal] = useState(false)
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const previewBlobRef = useRef<Blob | null>(null)
 
   const allResults = useMemo(() => result.results, [result.results])
   const allCandidates = useMemo(() => allResults.map((r) => ({
@@ -126,6 +136,13 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     return () => { clearTimeout(t1); clearTimeout(t2) }
   }, [prefersReduced])
 
+  // Cleanup preview URL al desmontar
+  useEffect(() => {
+    return () => {
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+    }
+  }, [previewUrl])
+
   // Animate scores
   useEffect(() => {
     if (phase !== "reveal" || prefersReduced) return
@@ -176,151 +193,317 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
       img.src = src
     })
 
-  // Generar imagen story con fotos de candidatos
+  // Generar imagen story 1080x1920 pixel-perfect con el diseño del HTML del Reveal
   const generateShareImage = useCallback(async (): Promise<Blob | null> => {
     try {
-      const W = 540, scale = 2, pad = 32
-      const rowH = 90, rowGap = 12
-      const hasInit = initialNotInTop3 && initialCandidate && initialResult
-      const visibleCandidates = allCandidates.filter(
-        (item) => !(hasInit && item.candidateId === initialCandidate?.id)
-      )
-      const totalRows = visibleCandidates.length + (hasInit ? 1 : 0)
-      const H = 220 + totalRows * (rowH + rowGap) + (hasInit ? 50 : 0) + 100
+      // Formato Instagram Story (1080x1920) — proporcional al HTML escalado x2
+      const W = 1080
+      const H = 1920
+      const PAD = 60
+      const cardX = PAD
+      const cardW = W - PAD * 2
 
       const canvas = document.createElement("canvas")
-      canvas.width = W * scale; canvas.height = H * scale
+      canvas.width = W
+      canvas.height = H
       const ctx = canvas.getContext("2d")
       if (!ctx) return null
-      ctx.scale(scale, scale)
 
-      const font = "system-ui, -apple-system, sans-serif"
+      const font = "system-ui, -apple-system, 'Inter', sans-serif"
 
-      // Fondo
-      const bg = ctx.createLinearGradient(0, 0, W, H)
-      bg.addColorStop(0, "#0c0c18"); bg.addColorStop(1, "#161630")
-      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H)
+      // ============ FONDO (gradiente oscuro como el tema) ============
+      const bg = ctx.createLinearGradient(0, 0, 0, H)
+      bg.addColorStop(0, "#0c0c18")
+      bg.addColorStop(0.5, "#13132a")
+      bg.addColorStop(1, "#161630")
+      ctx.fillStyle = bg
+      ctx.fillRect(0, 0, W, H)
 
-      // Barra decorativa
-      const acc = ctx.createLinearGradient(0, 0, W, 0)
-      acc.addColorStop(0, "#7c3aed"); acc.addColorStop(0.5, "#f59e0b"); acc.addColorStop(1, "#7c3aed")
-      ctx.fillStyle = acc; ctx.fillRect(0, 0, W, 5)
+      // ============ HEADER: LOGO + URL ============
+      const host = typeof window !== "undefined" ? window.location.host : "votoloco.com"
 
-      // Branding
-      const host = typeof window !== "undefined" ? window.location.host : ""
-      ctx.fillStyle = "#7c3aed"; ctx.font = `bold 28px ${font}`; ctx.textAlign = "center"
-      ctx.fillText("VotoLoco", W / 2, 45)
-      ctx.fillStyle = "#666"; ctx.font = `bold 13px ${font}`
-      ctx.fillText(host.toUpperCase(), W / 2, 68)
+      // Cargar logo
+      try {
+        const logo = await loadImg("/votolocoimage.png")
+        ctx.drawImage(logo, W / 2 - 50, 60, 100, 100)
+      } catch {
+        // ignorar si no carga
+      }
 
-      // Badge match/gap
-      const badgeText = isMatch ? "✓ Preferencia y afinidad coinciden" : "⚡ Preferencia y afinidad NO coinciden"
+      // Marca
+      ctx.fillStyle = "#FFDE3A"
+      ctx.font = `bold 56px ${font}`
+      ctx.textAlign = "center"
+      ctx.fillText("VotoLoco", W / 2, 220)
+
+      // URL pequeño
+      ctx.fillStyle = "#888"
+      ctx.font = `bold 24px ${font}`
+      ctx.fillText(host.toUpperCase(), W / 2, 258)
+
+      // ============ BADGE MATCH/GAP (pill) ============
+      const badgeY = 310
+      const badgeText = isMatch
+        ? "✓ Tu preferencia y tu afinidad coinciden"
+        : "⚡ Tu preferencia y tu afinidad NO coinciden"
       const badgeColor = isMatch ? "#22c55e" : "#f59e0b"
-      ctx.fillStyle = badgeColor; ctx.font = `bold 14px ${font}`
-      ctx.fillText(badgeText, W / 2, 100)
+      const badgeBg = isMatch ? "rgba(34, 197, 94, 0.12)" : "rgba(245, 158, 11, 0.12)"
 
-      // Separador
-      ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
-      ctx.beginPath(); ctx.moveTo(pad + 20, 115); ctx.lineTo(W - pad - 20, 115); ctx.stroke()
+      ctx.font = `bold 28px ${font}`
+      const badgeTextWidth = ctx.measureText(badgeText).width
+      const badgePadX = 40
+      const badgeWidth = badgeTextWidth + badgePadX * 2
+      const badgeHeight = 64
 
-      let curY = 130
-      const cardX = pad, cardW = W - pad * 2
+      ctx.beginPath()
+      ctx.roundRect((W - badgeWidth) / 2, badgeY, badgeWidth, badgeHeight, badgeHeight / 2)
+      ctx.fillStyle = badgeBg
+      ctx.fill()
+      ctx.strokeStyle = badgeColor + "55"
+      ctx.lineWidth = 2
+      ctx.stroke()
 
-      // Helper para dibujar una fila con foto
-      const drawCandRow = async (
-        y: number, rank: number, name: string, party: string,
-        color: string, photo: string | undefined, scoreVal: number,
-        isFirst: boolean, isDashed: boolean
-      ) => {
-        // Fondo tarjeta con rounded rect
-        ctx.beginPath(); ctx.roundRect(cardX, y, cardW, rowH, 14)
-        ctx.fillStyle = isFirst ? color + "18" : "#1a1a30"; ctx.fill()
-        ctx.strokeStyle = isFirst ? color + "50" : isDashed ? color + "50" : "#2a2a45"
-        ctx.lineWidth = isFirst ? 2 : 1
-        if (isDashed) ctx.setLineDash([8, 5])
-        ctx.stroke(); ctx.setLineDash([])
+      ctx.fillStyle = badgeColor
+      ctx.textBaseline = "middle"
+      ctx.fillText(badgeText, W / 2, badgeY + badgeHeight / 2 + 2)
+      ctx.textBaseline = "alphabetic"
 
-        const cy = y + rowH / 2
-        const rowPad = 16
+      // ============ HELPER: dibujar tarjeta de candidato (h dinámico) ============
+      const drawScaledCard = async (
+        y: number,
+        h: number,
+        rank: number,
+        name: string,
+        party: string,
+        color: string,
+        photo: string | undefined,
+        scoreVal: number,
+        isTop: boolean,
+        isDashed: boolean,
+      ): Promise<number> => {
+        const r = 28
+        const padX = 40
 
-        // Badge numero
-        ctx.beginPath(); ctx.arc(cardX + rowPad + 14, cy, 14, 0, Math.PI * 2)
-        ctx.fillStyle = isFirst ? "#7c3aed" : "#2a2a45"; ctx.fill()
-        ctx.fillStyle = "#fff"; ctx.font = `bold 14px ${font}`; ctx.textAlign = "center"
-        ctx.fillText(String(rank), cardX + rowPad + 14, cy + 5)
+        // Sombra brutal del top 1
+        if (isTop && !isDashed) {
+          ctx.beginPath()
+          ctx.roundRect(cardX + 8, y + 8, cardW, h, r)
+          ctx.fillStyle = color
+          ctx.fill()
+        }
 
-        // Foto del candidato
-        const avatarX = cardX + rowPad + 42, avatarR = 18
-        ctx.beginPath(); ctx.arc(avatarX, cy, avatarR, 0, Math.PI * 2)
-        ctx.fillStyle = color + "25"; ctx.fill()
+        // Card body
+        ctx.beginPath()
+        ctx.roundRect(cardX, y, cardW, h, r)
+        ctx.fillStyle = isTop ? color + "26" : "#1a1a30"
+        ctx.fill()
+
+        // Border
+        if (isDashed) {
+          ctx.setLineDash([16, 10])
+          ctx.strokeStyle = color + "99"
+          ctx.lineWidth = 4
+        } else if (isTop) {
+          ctx.setLineDash([])
+          ctx.strokeStyle = color
+          ctx.lineWidth = 5
+        } else {
+          ctx.setLineDash([])
+          ctx.strokeStyle = "#2a2a45"
+          ctx.lineWidth = 3
+        }
+        ctx.stroke()
+        ctx.setLineDash([])
+
+        const cy = y + h / 2
+
+        // Tamaños proporcionales a la altura
+        const baseHTop = 200
+        const baseHOther = 150
+        const baseH = isTop ? baseHTop : baseHOther
+        const sf = h / baseH
+
+        // ===== Badge número =====
+        const badgeRadius = (isTop ? 36 : 28) * sf
+        const badgeCx = cardX + padX + badgeRadius
+        ctx.beginPath()
+        ctx.arc(badgeCx, cy, badgeRadius, 0, Math.PI * 2)
+        ctx.fillStyle = isTop ? "#FFDE3A" : "#2a2a45"
+        ctx.fill()
+        ctx.fillStyle = isTop ? "#0c0c18" : "#fff"
+        ctx.font = `bold ${Math.round((isTop ? 32 : 26) * sf)}px ${font}`
+        ctx.textAlign = "center"
+        ctx.textBaseline = "middle"
+        ctx.fillText(String(rank), badgeCx, cy + 2)
+        ctx.textBaseline = "alphabetic"
+
+        // ===== Foto del candidato =====
+        const avatarRadius = (isTop ? 56 : 42) * sf
+        const avatarCx = badgeCx + badgeRadius + avatarRadius + 28 * sf
+        ctx.beginPath()
+        ctx.arc(avatarCx, cy, avatarRadius, 0, Math.PI * 2)
+        ctx.fillStyle = color + "33"
+        ctx.fill()
 
         if (photo) {
           try {
             const img = await loadImg(photo)
             ctx.save()
-            ctx.beginPath(); ctx.arc(avatarX, cy, avatarR - 1, 0, Math.PI * 2); ctx.clip()
-            ctx.drawImage(img, avatarX - avatarR + 1, cy - avatarR + 1, (avatarR - 1) * 2, (avatarR - 1) * 2)
+            ctx.beginPath()
+            ctx.arc(avatarCx, cy, avatarRadius - 2, 0, Math.PI * 2)
+            ctx.clip()
+            const size = (avatarRadius - 2) * 2
+            ctx.drawImage(img, avatarCx - avatarRadius + 2, cy - avatarRadius + 2, size, size)
             ctx.restore()
           } catch {
-            ctx.beginPath(); ctx.arc(avatarX, cy, 7, 0, Math.PI * 2)
-            ctx.fillStyle = color; ctx.fill()
+            ctx.beginPath()
+            ctx.arc(avatarCx, cy, avatarRadius / 2, 0, Math.PI * 2)
+            ctx.fillStyle = color
+            ctx.fill()
           }
         } else {
-          ctx.beginPath(); ctx.arc(avatarX, cy, 7, 0, Math.PI * 2)
-          ctx.fillStyle = color; ctx.fill()
+          ctx.beginPath()
+          ctx.arc(avatarCx, cy, avatarRadius / 2, 0, Math.PI * 2)
+          ctx.fillStyle = color
+          ctx.fill()
         }
 
-        // Nombre
-        const textX = avatarX + avatarR + 12
-        ctx.textAlign = "left"; ctx.fillStyle = "#fff"
-        ctx.font = isFirst ? `bold 16px ${font}` : `500 15px ${font}`
-        ctx.fillText(name, textX, cy - 6)
+        // ===== Nombre + Partido =====
+        const textX = avatarCx + avatarRadius + 32 * sf
+        const scoreReserve = 220 * sf
+        const textMaxW = cardX + cardW - textX - scoreReserve
 
-        // Partido
-        ctx.fillStyle = "#777"; ctx.font = `12px ${font}`
-        let p = party
-        const maxPW = cardW - (textX - cardX) - 60
-        while (ctx.measureText(p).width > maxPW && p.length > 5) p = p.slice(0, -4) + "..."
-        ctx.fillText(p, textX, cy + 12)
+        ctx.textAlign = "left"
+        ctx.fillStyle = "#ffffff"
+        ctx.font = `bold ${Math.round((isTop ? 44 : 36) * sf)}px ${font}`
+        let displayName = name
+        while (ctx.measureText(displayName).width > textMaxW && displayName.length > 5) {
+          displayName = displayName.slice(0, -2) + "…"
+        }
+        ctx.fillText(displayName, textX, cy - (isTop ? 8 : 6) * sf)
 
-        // Score
-        ctx.textAlign = "right"; ctx.fillStyle = isFirst ? "#7c3aed" : "#bbb"
-        ctx.font = isFirst ? `bold 26px ${font}` : `bold 20px ${font}`
-        ctx.fillText(`${scoreVal}%`, cardX + cardW - rowPad, cy + 7)
+        ctx.fillStyle = "#888"
+        ctx.font = `${Math.round((isTop ? 24 : 20) * sf)}px ${font}`
+        let displayParty = party
+        while (ctx.measureText(displayParty).width > textMaxW && displayParty.length > 5) {
+          displayParty = displayParty.slice(0, -3) + "…"
+        }
+        ctx.fillText(displayParty, textX, cy + (isTop ? 30 : 26) * sf)
+
+        // ===== Score =====
+        ctx.textAlign = "right"
+        ctx.fillStyle = isTop ? "#FFDE3A" : "#bbb"
+        ctx.font = `bold ${Math.round((isTop ? 72 : 52) * sf)}px ${font}`
+        ctx.fillText(`${scoreVal}%`, cardX + cardW - padX, cy + (isTop ? 22 : 16) * sf)
+
+        return y + h
       }
 
-      // Candidato elegido primero
+      // ============ CANDIDATO ELEGIDO (si no está en top y no es especial) ============
+      let curY = 410
+      const hasInit = !!initialNotInTop3 && !!initialCandidate && !!initialResult
+
       if (hasInit && initialCandidate && initialResult) {
-        ctx.fillStyle = "#999"; ctx.font = `13px ${font}`; ctx.textAlign = "center"
-        ctx.fillText("Candidato que escogiste antes de hacer el test", W / 2, curY + 4)
-        curY += 16
-        await drawCandRow(curY, initialRank, initialCandidate.name, initialCandidate.party, initialCandidate.color, initialCandidate.photo, initialResult.score, false, true)
-        curY += rowH + rowGap + 8
-        ctx.strokeStyle = "#2a2a40"; ctx.lineWidth = 1
-        ctx.beginPath(); ctx.moveTo(pad + 20, curY); ctx.lineTo(W - pad - 20, curY); ctx.stroke()
-        curY += 12
+        ctx.fillStyle = "#999"
+        ctx.font = `28px ${font}`
+        ctx.textAlign = "center"
+        ctx.fillText("Candidato que escogiste antes de hacer el test", W / 2, curY)
+        curY += 50
+
+        const endY = await drawScaledCard(
+          curY,
+          150, // h fijo para candidato elegido
+          initialRank,
+          initialCandidate.name,
+          initialCandidate.party,
+          initialCandidate.color,
+          initialCandidate.photo,
+          initialResult.score,
+          false,
+          true, // dashed border
+        )
+        curY = endY + 40
+
+        // Separador
+        ctx.beginPath()
+        ctx.moveTo(cardX + 80, curY)
+        ctx.lineTo(W - cardX - 80, curY)
+        ctx.strokeStyle = "#2a2a40"
+        ctx.lineWidth = 2
+        ctx.stroke()
+        curY += 40
       }
 
-      // Titulo
-      ctx.fillStyle = "#999"; ctx.font = `13px ${font}`; ctx.textAlign = "center"
-      ctx.fillText("Candidatos con los que tienes afinidad asociado a su plan de gobierno", W / 2, curY + 4)
-      curY += 16
+      // ============ TÍTULO RANKING ============
+      ctx.fillStyle = "#bbb"
+      ctx.font = `28px ${font}`
+      ctx.textAlign = "center"
 
-      // Todos los candidatos
-      for (const item of visibleCandidates) {
+      // Texto largo en 2 líneas
+      const titleLine1 = "Candidatos con los que tienes afinidad"
+      const titleLine2 = "asociado a su plan de gobierno"
+      ctx.fillText(titleLine1, W / 2, curY)
+      ctx.fillText(titleLine2, W / 2, curY + 36)
+      curY += 80
+
+      // ============ TODOS LOS CANDIDATOS ============
+      // Calcular cuánto espacio hay disponible para que quepa todo
+      const footerH = 220
+      const availableH = H - curY - footerH
+      const totalCandidates = allCandidates.length
+      const topH = 200
+      const otherH = 150
+      const gap = 16
+      const neededH = topH + (totalCandidates - 1) * (otherH + gap) + gap
+
+      // Si no cabe todo, ajustar (caso raro pero por seguridad)
+      const scaleFactor = neededH > availableH ? availableH / neededH : 1
+      const adjustedTopH = Math.floor(topH * scaleFactor)
+      const adjustedOtherH = Math.floor(otherH * scaleFactor)
+      const adjustedGap = Math.floor(gap * scaleFactor)
+
+      // Si no necesitamos escalar, usar tamaños originales
+      const useTop = scaleFactor < 1 ? adjustedTopH : topH
+      const useOther = scaleFactor < 1 ? adjustedOtherH : otherH
+      const useGap = scaleFactor < 1 ? adjustedGap : gap
+
+      for (let i = 0; i < allCandidates.length; i++) {
+        const item = allCandidates[i]
         if (!item.candidate) continue
-        const idx = allCandidates.indexOf(item)
-        await drawCandRow(curY, idx + 1, item.candidate.name, item.candidate.party, item.candidate.color, item.candidate.photo, item.score, idx === 0, false)
-        curY += rowH + rowGap
+        const isFirst = i === 0
+        const h = isFirst ? useTop : useOther
+        await drawScaledCard(
+          curY,
+          h,
+          i + 1,
+          item.candidate.name,
+          item.candidate.party,
+          item.candidate.color,
+          item.candidate.photo,
+          item.score,
+          isFirst,
+          false,
+        )
+        curY += h + useGap
       }
 
-      // CTA
-      ctx.textAlign = "center"; ctx.fillStyle = "#555"; ctx.font = `13px ${font}`
-      ctx.fillText("Descubre tu afinidad programática", W / 2, H - 55)
-      ctx.fillStyle = "#7c3aed"; ctx.font = `bold 15px ${font}`
-      ctx.fillText(host, W / 2, H - 35)
-      ctx.fillStyle = "#444"; ctx.font = `10px ${font}`
-      ctx.fillText("David E. Palacio · Desarrollador & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 15)
+      // ============ FOOTER ============
+      ctx.textAlign = "center"
+      ctx.fillStyle = "#666"
+      ctx.font = `26px ${font}`
+      ctx.fillText("Descubre tu afinidad programática", W / 2, H - 140)
+
+      ctx.fillStyle = "#FFDE3A"
+      ctx.font = `bold 36px ${font}`
+      ctx.fillText(host, W / 2, H - 90)
+
+      ctx.fillStyle = "#555"
+      ctx.font = `18px ${font}`
+      ctx.fillText(
+        "David E. Palacio · Desarrollador & IA  |  Ricardo Palacio · Estratega de Producto",
+        W / 2,
+        H - 40,
+      )
 
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch (err) {
@@ -365,28 +548,67 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
     toast.success("Imagen descargada")
   }, [generateShareImage])
 
+  // Detectar dispositivo móvil
+  const isMobileDevice = useCallback((): boolean => {
+    if (typeof navigator === "undefined") return false
+    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+  }, [])
+
   const handleInstagramStory = useCallback(async () => {
+    const isMobile = isMobileDevice()
     const blob = await generateShareImage()
     if (!blob) { toast.error("No se pudo generar la imagen"); return }
 
-    // En móvil, usar Web Share API con la imagen (abre Instagram directo)
-    if (navigator.share) {
+    // MÓVIL: Web Share API directa para abrir Instagram
+    if (isMobile && navigator.share) {
       try {
-        const file = new File([blob], "votai-resultado.png", { type: "image/png" })
+        const file = new File([blob], "votoloco-historia.png", { type: "image/png" })
         if (navigator.canShare?.({ files: [file] })) {
-          await navigator.share({ files: [file] })
+          toast.info("Abriendo menú de compartir... selecciona Instagram", { duration: 3000 })
+          await navigator.share({
+            title: "Mi afinidad programática",
+            files: [file],
+          })
           return
         }
-      } catch { /* cancelled */ }
+      } catch (err) {
+        // Usuario canceló o hubo error
+        const errorName = (err as Error)?.name
+        if (errorName !== "AbortError") {
+          toast.error("No se pudo compartir. Descarga la imagen manualmente.")
+        }
+        return
+      }
     }
 
-    // Fallback: descargar y mostrar instrucciones
+    // DESKTOP: mostrar modal con preview e instrucciones
+    if (previewUrl) URL.revokeObjectURL(previewUrl)
+    const url = URL.createObjectURL(blob)
+    previewBlobRef.current = blob
+    setPreviewUrl(url)
+    setShowInstagramModal(true)
+  }, [generateShareImage, isMobileDevice, previewUrl])
+
+  const handleDownloadFromModal = useCallback(() => {
+    const blob = previewBlobRef.current
+    if (!blob) return
     const url = URL.createObjectURL(blob)
     const a = document.createElement("a")
-    a.href = url; a.download = "votai-resultado.png"; a.click()
+    a.href = url
+    a.download = "votoloco-historia.png"
+    a.click()
     URL.revokeObjectURL(url)
-    toast.success("Imagen descargada. Ábrela en Instagram → Historia → Sticker de link para agregar el URL", { duration: 6000 })
-  }, [generateShareImage])
+    toast.success("Imagen descargada. Súbela a tu historia desde Instagram en tu celular.")
+  }, [])
+
+  const handleCloseInstagramModal = useCallback(() => {
+    setShowInstagramModal(false)
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl)
+      setPreviewUrl(null)
+    }
+    previewBlobRef.current = null
+  }, [previewUrl])
 
   const handleStartAxes = useCallback(() => {
     if (axisSlides.length > 0) { setPhase("axes"); setAxisIndex(0) }
@@ -692,6 +914,69 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Modal de Instagram para desktop */}
+      <Dialog open={showInstagramModal} onOpenChange={(open) => { if (!open) handleCloseInstagramModal() }}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="size-5 text-primary">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+              </svg>
+              Compartir en Instagram Stories
+            </DialogTitle>
+            <DialogDescription>
+              Instagram solo permite subir historias desde el celular. Sigue estos pasos:
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="grid gap-4 sm:grid-cols-[1fr_1.5fr]">
+            {/* Preview de la imagen */}
+            {previewUrl && (
+              <div className="flex items-center justify-center">
+                <div className="overflow-hidden rounded-brutal border-2 border-surface-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={previewUrl}
+                    alt="Preview de la historia"
+                    className="h-auto w-full max-w-[200px] object-contain"
+                  />
+                </div>
+              </div>
+            )}
+
+            {/* Instrucciones */}
+            <ol className="flex flex-col gap-3 text-sm text-text-muted">
+              <li className="flex items-start gap-2">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">1</span>
+                <span><strong className="text-text">Descarga la imagen</strong> con el botón de abajo.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">2</span>
+                <span className="flex items-center gap-1.5"><Smartphone className="size-3.5 shrink-0" /><strong className="text-text">Abre Instagram</strong> en tu celular.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">3</span>
+                <span>Crea una <strong className="text-text">nueva historia</strong> y selecciona la imagen descargada.</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <span className="flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary">4</span>
+                <span>Agrega el <strong className="text-text">sticker de link</strong> con la URL de VotoLoco para que tus amigos también prueben.</span>
+              </li>
+            </ol>
+          </div>
+
+          <div className="mt-2 flex flex-col gap-2 sm:flex-row sm:justify-end">
+            <Button variant="outline" size="sm" onClick={handleCloseInstagramModal}>
+              Cerrar
+            </Button>
+            <Button variant="brutal" size="sm" onClick={handleDownloadFromModal} className="gap-2">
+              <Download className="size-4" />
+              Descargar imagen
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
