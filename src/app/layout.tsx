@@ -20,7 +20,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://vot-ai.vercel.app"),
+  metadataBase: new URL("https://votoloco.com"),
   title: {
     default: "VotoLoco - 10 preguntas. Tu candidato real. Sin enredos.",
     template: "%s | VotoLoco",
@@ -46,12 +46,12 @@ export const metadata: Metadata = {
   creator: "David Elias Palacio",
   publisher: "VotoLoco",
   alternates: {
-    canonical: "https://vot-ai.vercel.app",
+    canonical: "https://votoloco.com",
   },
   openGraph: {
     type: "website",
     locale: "es_CO",
-    url: "https://vot-ai.vercel.app",
+    url: "https://votoloco.com",
     siteName: "VotoLoco",
     title: "VotoLoco - ¿Estás seguro por quién vas a votar?",
     description:
@@ -85,7 +85,7 @@ const jsonLd = {
   "@context": "https://schema.org",
   "@type": "WebApplication",
   name: "VotoLoco",
-  url: "https://vot-ai.vercel.app",
+  url: "https://votoloco.com",
   description:
     "Test de afinidad programática para las elecciones presidenciales de Colombia 2026. Responde 10 preguntas y descubre qué candidato se alinea con lo que piensas.",
   applicationCategory: "UtilitiesApplication",

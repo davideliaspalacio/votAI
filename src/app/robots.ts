@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: ["/", "/api/og"],
       disallow: ["/api/", "/analyzing"],
     },
-    sitemap: "https://vot-ai.vercel.app/sitemap.xml",
+    sitemap: "https://votoloco.com/sitemap.xml",
   }
 }
