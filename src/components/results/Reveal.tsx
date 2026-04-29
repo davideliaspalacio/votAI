@@ -480,14 +480,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
       ctx.font = `bold 36px ${font}`
       ctx.fillText(host, W / 2, H - 90)
 
-      ctx.fillStyle = "#555"
-      ctx.font = `18px ${font}`
-      ctx.fillText(
-        "David E. Palacio · Desarrollador & IA  |  Ricardo Palacio · Estratega de Producto",
-        W / 2,
-        H - 40,
-      )
-
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch (err) {
       console.error("Error generando imagen:", err)
