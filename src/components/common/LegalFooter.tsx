@@ -61,7 +61,55 @@ export function LegalFooter() {
           </div>
         </div>
 
+        <div className="mt-10 border-t border-surface-border pt-6 text-center text-xs text-text-subtle space-y-3">
+          <p>
+            © {new Date().getFullYear()} VotoLoco. Herramienta de afinidad
+            programática. No es una encuesta. No predice resultados electorales.
+          </p>
+          <div className="space-y-1">
+            <p>
+              <a
+                href="https://www.instagram.com/richarpalacio/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted transition-colors hover:text-primary"
+              >
+                Ricardo Palacio B.
+              </a>
+              {" — "}Director de Proyecto
+            </p>
+            <p>
+              <a
+                href="https://www.davidpalacio.dev/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-text-muted transition-colors hover:text-primary"
+              >
+                David Elias Palacio G.
+              </a>
+              {" — "}AI Full Stack Developer
+            </p>
+          </div>
 
+          <div className="flex flex-col items-center gap-2 pt-4">
+            <span className="text-[11px] uppercase tracking-wider text-text-subtle">
+              Aliado
+            </span>
+            <a
+              href="https://hbconsultoresdelcaribe.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="opacity-70 transition-opacity hover:opacity-100"
+              aria-label="HB Consultores del Caribe (abre en una nueva pestaña)"
+            >
+              <img
+                src="/logo-hb-web.png"
+                alt="HB Consultores del Caribe"
+                className="h-10 w-auto"
+              />
+            </a>
+          </div>
+        </div>
       </div>
     </footer>
   )
