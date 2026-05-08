@@ -91,23 +91,38 @@ export function LegalFooter() {
             </p>
           </div>
 
-          <div className="flex flex-col items-center gap-2 pt-4">
+          <div className="flex flex-col items-center gap-3 pt-4">
             <span className="text-[11px] uppercase tracking-wider text-text-subtle">
-              Aliado
+              Aliados
             </span>
-            <a
-              href="https://hbconsultoresdelcaribe.com/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="opacity-70 transition-opacity hover:opacity-100"
-              aria-label="HB Consultores del Caribe (abre en una nueva pestaña)"
-            >
-              <img
-                src="/logo-hb-web.png"
-                alt="HB Consultores del Caribe"
-                className="h-10 w-auto"
-              />
-            </a>
+            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
+              <a
+                href="https://hbconsultoresdelcaribe.com/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="opacity-70 transition-opacity hover:opacity-100"
+                aria-label="HB Consultores del Caribe (abre en una nueva pestaña)"
+              >
+                <img
+                  src="/logo-hb-web.png"
+                  alt="HB Consultores del Caribe"
+                  className="h-10 w-auto"
+                />
+              </a>
+              <a
+                href="https://ceipa.edu.co/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="opacity-70 transition-opacity hover:opacity-100"
+                aria-label="CEIPA (abre en una nueva pestaña)"
+              >
+                <img
+                  src="/logo-ceipa.png"
+                  alt="CEIPA"
+                  className="h-10 w-auto"
+                />
+              </a>
+            </div>
           </div>
         </div>
       </div>
