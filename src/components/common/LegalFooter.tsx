@@ -89,22 +89,6 @@ export function LegalFooter() {
               </a>
               {" — "}AI Full Stack Developer
             </p>
-            <p className="pt-2">
-              <span className="text-[11px] uppercase tracking-wider text-text-subtle">
-                Consultores
-              </span>
-            </p>
-            <p>Julio César Novoa F.</p>
-            <p>
-              <a
-                href="https://www.instagram.com/oscarmass/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-text-muted transition-colors hover:text-primary"
-              >
-                Oscar Mass P.
-              </a>
-            </p>
           </div>
 
           <div className="flex flex-col items-center gap-2 pt-4">
