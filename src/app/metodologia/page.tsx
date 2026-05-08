@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Header } from "@/components/common/Header"
 import { LegalFooter } from "@/components/common/LegalFooter"
 import { Disclaimer } from "@/components/common/Disclaimer"
+import { GlossaryTerm } from "@/components/civic/GlossaryTerm"
 
 export const metadata: Metadata = {
   title: "Metodología",
@@ -72,7 +73,7 @@ export default function MetodologiaPage() {
             <p>
               VotoLoco <strong className="text-text">NO</strong> es una encuesta
               electoral y <strong className="text-text">NO </strong> está
-              registrada ante el Consejo Nacional Electoral (CNE) porque no lo
+              registrada ante el Consejo Nacional Electoral (<GlossaryTerm term="CNE">CNE</GlossaryTerm>) porque no lo
               es. Una encuesta electoral mide intención de voto preguntando
               directamente &ldquo;¿por quién va a votar?&rdquo;. VotoLoco mide
               afinidad programática: compara tus posiciones en temas concretos

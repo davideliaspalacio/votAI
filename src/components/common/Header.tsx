@@ -8,6 +8,9 @@ import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/s
 
 const baseLinks = [
   { href: "/", label: "Inicio" },
+  { href: "/como-voto", label: "Cómo votar" },
+  { href: "/calendario", label: "Calendario" },
+  { href: "/glosario", label: "Glosario" },
   { href: "/metodologia", label: "Metodología" },
 ]
 

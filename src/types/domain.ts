@@ -139,7 +139,13 @@ export interface PublicStats {
   }[]
   preference_vs_match: {
     fromCandidateId: string
-    to: { candidateId: string; pct: number }[]
+    fromTotal?: number
+    to: { candidateId: string; pct: number; count?: number }[]
+  }[]
+  initial_preference_counts?: {
+    preference: string
+    count: number
+    pct: number
   }[]
   gap_national_pct: number
   decisive_axes: { axis: string; avgWeight: number }[]

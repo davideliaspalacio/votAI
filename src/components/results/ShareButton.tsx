@@ -265,9 +265,6 @@ export function ShareButton({
       ctx.fillStyle = "#7c3aed"; ctx.font = "bold 14px system-ui, -apple-system, sans-serif"
       ctx.fillText(host, W / 2, curY + 22)
 
-      ctx.fillStyle = "#444444"; ctx.font = "11px system-ui, -apple-system, sans-serif"
-      ctx.fillText("David E. Palacio · Desarrollador & IA  |  Ricardo Palacio · Estratega de Producto", W / 2, H - 18)
-
       return new Promise((resolve) => canvas.toBlob(resolve, "image/png"))
     } catch (err) {
       console.error("Error generando imagen:", err)

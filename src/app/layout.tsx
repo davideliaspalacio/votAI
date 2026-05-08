@@ -42,8 +42,6 @@ export const metadata: Metadata = {
     "voto en blanco",
     "elecciones presidenciales Colombia",
   ],
-  authors: [{ name: "David Elias Palacio" }],
-  creator: "David Elias Palacio",
   publisher: "VotoLoco",
   alternates: {
     canonical: "https://votoloco.com",
@@ -90,11 +88,6 @@ const jsonLd = {
     "Test de afinidad programática para las elecciones presidenciales de Colombia 2026. Responde 10 preguntas y descubre qué candidato se alinea con lo que piensas.",
   applicationCategory: "UtilitiesApplication",
   operatingSystem: "All",
-  author: {
-    "@type": "Person",
-    name: "David Elias Palacio",
-    url: "https://www.davidpalacio.dev/",
-  },
   offers: {
     "@type": "Offer",
     price: "0",
