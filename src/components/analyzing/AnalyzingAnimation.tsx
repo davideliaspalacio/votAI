@@ -64,7 +64,8 @@ const FUN_FACTS = [
 ]
 
 const MIN_DISPLAY_MS = 4000
-const TIMEOUT_MS = 60000
+const TIMEOUT_MS = 180000
+const HIGH_TRAFFIC_HINT_MS = 25000
 
 export function AnalyzingAnimation() {
   const router = useRouter()
@@ -78,6 +79,7 @@ export function AnalyzingAnimation() {
   const [candidatesAnalyzed, setCandidatesAnalyzed] = useState(0)
   const [error, setError] = useState(false)
   const [done, setDone] = useState(false)
+  const [showTrafficHint, setShowTrafficHint] = useState(false)
   const startTime = useRef(Date.now())
 
   // Progreso logaritmico: rapido al inicio, lento al acercarse al 90%
@@ -126,6 +128,15 @@ export function AnalyzingAnimation() {
       setFunFact(FUN_FACTS[Math.floor(Math.random() * FUN_FACTS.length)])
     }, 5000)
     return () => clearInterval(interval)
+  }, [done])
+
+  // Mostrar aviso de tráfico alto si pasa cierto tiempo sin terminar
+  useEffect(() => {
+    if (done) return
+    const timer = setTimeout(() => {
+      setShowTrafficHint(true)
+    }, HIGH_TRAFFIC_HINT_MS)
+    return () => clearTimeout(timer)
   }, [done])
 
   // Polling
@@ -247,6 +258,11 @@ export function AnalyzingAnimation() {
           </span>
           <span>{Math.round(progress)}%</span>
         </div>
+        {showTrafficHint && !done && (
+          <p className="pt-1 text-center text-[11px] text-text-subtle">
+            Hay mucho tráfico, tu test está casi listo… aguanta unos segundos.
+          </p>
+        )}
       </div>
 
       {/* Dato curioso */}

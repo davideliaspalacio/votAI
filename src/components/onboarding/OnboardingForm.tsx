@@ -13,6 +13,7 @@ import { StepGender } from "./StepGender"
 import { StepIntention } from "./StepIntention"
 import { useSessionStore } from "@/lib/store/sessionStore"
 import { useQuizStore } from "@/lib/store/quizStore"
+import { useSessionRecovery } from "@/lib/hooks/useSessionRecovery"
 import { api } from "@/lib/api"
 import type { AgeRange, Region, Gender } from "@/types/domain"
 
@@ -23,6 +24,7 @@ export function OnboardingForm() {
   const prefersReduced = useReducedMotion()
   const { setSessionId, setDemographics } = useSessionStore()
   const resetQuiz = useQuizStore((s) => s.reset)
+  const recoveryState = useSessionRecovery()
 
   const [step, setStep] = useState(0)
   const [direction, setDirection] = useState(1)
@@ -103,6 +105,17 @@ export function OnboardingForm() {
         animate: { x: 0, opacity: 1 },
         exit: { x: direction > 0 ? -80 : 80, opacity: 0 },
       }
+
+  if (recoveryState === "checking" || recoveryState === "redirected") {
+    return (
+      <div className="flex min-h-dvh flex-col items-center justify-center gap-3 px-4">
+        <Loader2 className="size-8 animate-spin text-primary" />
+        <p className="text-sm text-text-muted">
+          Recuperando tu sesión anterior…
+        </p>
+      </div>
+    )
+  }
 
   return (
     <div className="flex min-h-dvh flex-col px-4 pb-28 pt-8">
