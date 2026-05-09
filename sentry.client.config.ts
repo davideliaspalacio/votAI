@@ -38,6 +38,11 @@ if (dsn) {
       // Hydration warnings React noisy in dev
       "Hydration failed",
       "There was an error while hydrating",
+      // In-app browsers (Instagram, Facebook, TikTok) inject scripts that
+      // try to access native bridges that don't exist in standard WebViews
+      "window.webkit.messageHandlers",
+      "messageHandlers",
+      "undefined is not an object (evaluating 'window.webkit",
     ],
     denyUrls: [
       // Browser extensions
