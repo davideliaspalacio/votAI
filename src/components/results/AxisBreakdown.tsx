@@ -66,7 +66,11 @@ function AxisCard({
             <div className="rounded-md bg-primary/5 p-3">
               <p className="text-xs font-semibold text-primary">Tu postura</p>
               <p className="mt-1 text-sm text-text-muted">
-                {axis.userStance}
+                {axis.userStance || (
+                  <span className="italic text-text-subtle">
+                    Genera el análisis con IA para ver tu postura.
+                  </span>
+                )}
               </p>
             </div>
             <div

@@ -107,9 +107,11 @@ export default function ResultsPage() {
                 </div>
                 <p className="text-xs text-text-subtle">de afinidad programática</p>
               </div>
-              <p className="mt-4 text-sm text-text-muted">
-                {topResult.summary}
-              </p>
+              {topResult.summary && (
+                <p className="mt-4 text-sm text-text-muted">
+                  {topResult.summary}
+                </p>
+              )}
             </section>
           )}
 
