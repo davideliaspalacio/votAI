@@ -64,7 +64,7 @@ const FUN_FACTS = [
 ]
 
 const MIN_DISPLAY_MS = 4000
-const TIMEOUT_MS = 60000
+const TIMEOUT_MS = 300_000
 
 export function AnalyzingAnimation() {
   const router = useRouter()
