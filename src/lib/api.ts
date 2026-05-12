@@ -83,6 +83,16 @@ export const api = {
     return fetcher<MatchResult>(`/api/match/${sessionId}`)
   },
 
+  enrichMatchWithAi: async (
+    sessionId: string
+  ): Promise<{ enriched: boolean; cached?: boolean; reason?: string }> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 2000))
+      return { enriched: true, cached: false }
+    }
+    return fetcher(`/api/match/${sessionId}/enrich-ai`, { method: "POST" })
+  },
+
   getPublicStats: async (): Promise<PublicStats> => {
     if (USE_MOCKS) return mockStats
     return fetcher<PublicStats>("/api/stats/public")

@@ -121,6 +121,7 @@ export interface MatchResult {
   initial_preference: string
   results: CandidateResult[]
   preference_match: boolean
+  ai_enriched?: boolean
 }
 
 // ── Public Stats ──
