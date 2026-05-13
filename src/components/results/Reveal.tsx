@@ -6,7 +6,6 @@ import { Check, Zap, User, ChevronLeft, ChevronRight, FileText, Share2 } from "l
 import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Progress } from "@/components/ui/progress"
-import { SubscribeCard } from "@/components/results/SubscribeCard"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { AXIS_LABELS } from "@/types/domain"
 import type { MatchResult, CandidateResult } from "@/types/domain"
@@ -748,16 +747,6 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
                 <strong className="text-text">{initialCandidate?.name}</strong>.
               </motion.p>
             )}
-
-            {/* Subscribe card */}
-            <motion.div
-              initial={prefersReduced ? {} : { opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1.2 }}
-              className="mx-auto mt-8 w-full max-w-xl"
-            >
-              <SubscribeCard source="reveal-comparison" />
-            </motion.div>
 
             {/* CTA */}
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="mt-8 flex flex-col items-center gap-4">

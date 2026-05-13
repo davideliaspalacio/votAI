@@ -9,7 +9,6 @@ import { RankingList } from "@/components/results/RankingList"
 import { AxisBreakdown } from "@/components/results/AxisBreakdown"
 import { ShareButton } from "@/components/results/ShareButton"
 import { EnrichWithAiButton } from "@/components/results/EnrichWithAiButton"
-import { SubscribeCard } from "@/components/results/SubscribeCard"
 import { Disclaimer } from "@/components/common/Disclaimer"
 import { LegalFooter } from "@/components/common/LegalFooter"
 import { ResultsSkeleton } from "@/components/common/Skeletons"
@@ -125,11 +124,6 @@ export default function ResultsPage() {
               />
             </section>
           )}
-
-          {/* Section 1.7: Subscribe to future tests (opt-in, no invasivo) */}
-          <section className="mx-auto w-full max-w-2xl px-4">
-            <SubscribeCard source="resultados" />
-          </section>
 
           {/* Section 2: Full Ranking */}
           <RankingList results={result.results} />
