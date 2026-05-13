@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import { Mail, Loader2, CheckCircle2, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -11,6 +11,8 @@ interface SubscribeCardProps {
 }
 
 type Phase = "form" | "details" | "thanks"
+
+const STORAGE_KEY = "votoloco_subscribed_email"
 
 // Validación de formato (no verifica que exista, solo que tenga forma correcta)
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
@@ -68,6 +70,22 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
   const [occupation, setOccupation] = useState("")
   const [heardFrom, setHeardFrom] = useState("")
 
+  // Honeypot: humanos lo dejan vacío, bots tienden a llenarlo
+  const [website, setWebsite] = useState("")
+
+  // Si ya se suscribió desde este navegador, saltamos directo a "thanks"
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY)
+      if (saved) {
+        setEmail(saved)
+        setPhase("thanks")
+      }
+    } catch {
+      // localStorage no disponible — seguimos normal
+    }
+  }, [])
+
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     if (inFlight.current || loading) return
@@ -83,7 +101,17 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
     inFlight.current = true
     setLoading(true)
     try {
-      await api.subscribe({ email: email.trim(), consent, source })
+      await api.subscribe({
+        email: email.trim(),
+        consent,
+        source,
+        website,
+      })
+      try {
+        localStorage.setItem(STORAGE_KEY, email.trim())
+      } catch {
+        // ignore
+      }
       setPhase("details")
     } catch (err) {
       const msg =
@@ -261,6 +289,30 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
         Te escribimos solo cuando saquemos un nuevo test, debate o análisis
         electoral. Sin spam.
       </p>
+
+      {/* Honeypot — oculto para humanos, visible para bots */}
+      <div
+        aria-hidden="true"
+        style={{
+          position: "absolute",
+          left: "-9999px",
+          top: "auto",
+          width: "1px",
+          height: "1px",
+          overflow: "hidden",
+        }}
+      >
+        <label>
+          No completar este campo
+          <input
+            type="text"
+            tabIndex={-1}
+            autoComplete="off"
+            value={website}
+            onChange={(e) => setWebsite(e.target.value)}
+          />
+        </label>
+      </div>
 
       <div className="mt-4">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">

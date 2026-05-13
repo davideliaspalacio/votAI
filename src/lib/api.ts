@@ -107,6 +107,7 @@ export const api = {
     email: string
     consent: boolean
     source?: string
+    website?: string
   }): Promise<{ subscribed: boolean }> => {
     if (USE_MOCKS) {
       await new Promise((r) => setTimeout(r, 500))
