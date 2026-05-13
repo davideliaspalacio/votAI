@@ -12,6 +12,14 @@ interface SubscribeCardProps {
 
 type Phase = "form" | "details" | "thanks"
 
+// Validación de formato (no verifica que exista, solo que tenga forma correcta)
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+function isValidEmail(email: string): boolean {
+  const trimmed = email.trim()
+  return EMAIL_REGEX.test(trimmed) && trimmed.length <= 254
+}
+
 const AGE_RANGES = [
   { value: "18-24", label: "18 a 24" },
   { value: "25-34", label: "25 a 34" },
@@ -44,10 +52,15 @@ const HEARD_FROM = [
 export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
   const [phase, setPhase] = useState<Phase>("form")
   const [email, setEmail] = useState("")
+  const [emailTouched, setEmailTouched] = useState(false)
   const [consent, setConsent] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const inFlight = useRef(false)
+
+  const emailValid = isValidEmail(email)
+  const showEmailError = emailTouched && email.length > 0 && !emailValid
+  const canSubmit = emailValid && consent && !loading
 
   const [name, setName] = useState("")
   const [ageRange, setAgeRange] = useState("")
@@ -59,6 +72,10 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
     e.preventDefault()
     if (inFlight.current || loading) return
     setError(null)
+    if (!emailValid) {
+      setEmailTouched(true)
+      return
+    }
     if (!consent) {
       setError("Debes aceptar el consentimiento para suscribirte.")
       return
@@ -245,32 +262,65 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
         electoral. Sin spam.
       </p>
 
-      <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
-        <Input
-          type="email"
-          inputMode="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="tu@correo.com"
-          className="sm:flex-1"
-          disabled={loading}
-        />
-        <Button
-          variant="brutal"
-          type="submit"
-          disabled={loading || !email || !consent}
-          className="gap-2 sm:w-auto"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="size-4 animate-spin" />
-              Enviando…
-            </>
-          ) : (
-            "Suscribirme"
-          )}
-        </Button>
+      <div className="mt-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <div className="flex-1">
+            <div className="relative">
+              <Input
+                type="email"
+                inputMode="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => setEmailTouched(true)}
+                placeholder="tu@correo.com"
+                disabled={loading}
+                aria-invalid={showEmailError}
+                aria-describedby={showEmailError ? "email-error" : undefined}
+                className={
+                  showEmailError
+                    ? "border-accent pr-9 focus-visible:ring-accent/30"
+                    : emailValid
+                      ? "border-primary/60 pr-9 focus-visible:ring-primary/30"
+                      : ""
+                }
+              />
+              {email.length > 0 && (
+                <span className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+                  {showEmailError ? (
+                    <AlertCircle className="size-4 text-accent" />
+                  ) : emailValid ? (
+                    <CheckCircle2 className="size-4 text-primary" />
+                  ) : null}
+                </span>
+              )}
+            </div>
+            {showEmailError && (
+              <p
+                id="email-error"
+                className="mt-1.5 text-xs text-accent"
+                role="alert"
+              >
+                Ingresa un correo válido (ej. tu@correo.com).
+              </p>
+            )}
+          </div>
+          <Button
+            variant="brutal"
+            type="submit"
+            disabled={!canSubmit}
+            className="gap-2 sm:w-auto"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="size-4 animate-spin" />
+                Enviando…
+              </>
+            ) : (
+              "Suscribirme"
+            )}
+          </Button>
+        </div>
       </div>
 
       <label className="mt-3 flex cursor-pointer items-start gap-2 text-xs text-text-muted">
