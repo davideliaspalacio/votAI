@@ -749,14 +749,15 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
             )}
 
             {/* CTA */}
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="mt-8 flex flex-col items-center gap-3">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }} className="mt-8 flex flex-col items-center gap-4">
               <Button variant="brutal" size="lg" onClick={handleStartAxes} className="gap-2">
                 Ver por qué
                 <ChevronRight className="size-4" />
               </Button>
-              <button onClick={handleSkip} className="text-xs text-text-subtle transition-colors hover:text-text-muted">
+              <Button variant="outline" size="lg" onClick={handleSkip} className="gap-2 border-2">
                 Saltar al resultado completo
-              </button>
+                <ChevronRight className="size-4" />
+              </Button>
             </motion.div>
           </motion.div>
         )}
@@ -773,9 +774,15 @@ export function Reveal({ result, onRevealComplete }: RevealProps) {
           >
             {/* Progress */}
             <div className="mb-6 w-full space-y-2">
-              <div className="flex items-center justify-between text-xs text-text-subtle">
+              <div className="flex items-center justify-between gap-3 text-xs text-text-subtle">
                 <span>{axisIndex + 1} de {totalAxes} ejes</span>
-                <button onClick={handleSkip} className="transition-colors hover:text-text-muted">Saltar</button>
+                <button
+                  onClick={handleSkip}
+                  className="inline-flex items-center gap-1 rounded-full border-2 border-primary/40 bg-primary/10 px-3 py-1 text-xs font-bold text-primary transition-colors hover:border-primary hover:bg-primary hover:text-background"
+                >
+                  Saltar al resultado
+                  <ChevronRight className="size-3.5" />
+                </button>
               </div>
               <Progress value={((axisIndex + 1) / totalAxes) * 100} className="h-1.5" />
             </div>

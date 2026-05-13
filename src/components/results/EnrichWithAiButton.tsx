@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useRef } from "react"
 import { Sparkles, Loader2, RefreshCw } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { api } from "@/lib/api"
@@ -17,8 +17,11 @@ export function EnrichWithAiButton({
   onEnriched,
 }: EnrichWithAiButtonProps) {
   const [state, setState] = useState<State>("idle")
+  const inFlight = useRef(false)
 
   const handleClick = async () => {
+    if (inFlight.current || state === "loading") return
+    inFlight.current = true
     setState("loading")
     try {
       const res = await api.enrichMatchWithAi(sessionId)
@@ -29,6 +32,8 @@ export function EnrichWithAiButton({
       await onEnriched()
     } catch {
       setState("error")
+    } finally {
+      inFlight.current = false
     }
   }
 

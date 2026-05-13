@@ -39,20 +39,36 @@ function AxisCard({
   const candidate = mockCandidates.find((c) => c.id === candidateId)
 
   return (
-    <div className="rounded-brutal border-2 border-surface-border bg-surface">
+    <div className="rounded-brutal border-2 border-surface-border bg-surface transition-colors hover:border-primary/40">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between px-5 py-4 text-left"
+        aria-expanded={expanded}
+        className="flex w-full items-center justify-between gap-3 px-5 py-4 text-left"
       >
-        <span className="font-display text-sm font-bold text-text">
+        <span className="font-display text-base font-bold text-text">
           {axis.axis}
         </span>
-        {expanded ? (
-          <ChevronUp className="size-4 text-text-subtle" />
-        ) : (
-          <ChevronDown className="size-4 text-text-subtle" />
-        )}
+        <span
+          className={cn(
+            "flex shrink-0 items-center gap-1.5 rounded-full border-2 px-3 py-1 text-xs font-bold transition-colors",
+            expanded
+              ? "border-primary bg-primary text-background"
+              : "border-primary/40 bg-primary/10 text-primary"
+          )}
+        >
+          {expanded ? (
+            <>
+              Ocultar
+              <ChevronUp className="size-3.5" />
+            </>
+          ) : (
+            <>
+              Ver detalle
+              <ChevronDown className="size-3.5" />
+            </>
+          )}
+        </span>
       </button>
 
       <div
