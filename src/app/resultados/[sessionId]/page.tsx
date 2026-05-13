@@ -8,6 +8,7 @@ import { Reveal } from "@/components/results/Reveal"
 import { RankingList } from "@/components/results/RankingList"
 import { AxisBreakdown } from "@/components/results/AxisBreakdown"
 import { ShareButton } from "@/components/results/ShareButton"
+import { EnrichWithAiButton } from "@/components/results/EnrichWithAiButton"
 import { Disclaimer } from "@/components/common/Disclaimer"
 import { LegalFooter } from "@/components/common/LegalFooter"
 import { ResultsSkeleton } from "@/components/common/Skeletons"
@@ -37,6 +38,11 @@ export default function ResultsPage() {
   const handleRevealComplete = useCallback(() => {
     setRevealed(true)
   }, [])
+
+  const handleEnriched = useCallback(async () => {
+    const fresh = await api.getMatchResult(sessionId)
+    setResult(fresh)
+  }, [sessionId])
 
   if (error) {
     return (
@@ -101,9 +107,21 @@ export default function ResultsPage() {
                 </div>
                 <p className="text-xs text-text-subtle">de afinidad programática</p>
               </div>
-              <p className="mt-4 text-sm text-text-muted">
-                {topResult.summary}
-              </p>
+              {topResult.summary && (
+                <p className="mt-4 text-sm text-text-muted">
+                  {topResult.summary}
+                </p>
+              )}
+            </section>
+          )}
+
+          {/* Section 1.6: Enrich with AI (solo si aún no fue enriquecido) */}
+          {result.ai_enriched === false && (
+            <section className="mx-auto w-full max-w-2xl px-4">
+              <EnrichWithAiButton
+                sessionId={sessionId}
+                onEnriched={handleEnriched}
+              />
             </section>
           )}
 
