@@ -102,4 +102,37 @@ export const api = {
     if (USE_MOCKS) return { total_sessions: 535 }
     return fetcher<{ total_sessions: number }>("/api/stats/count")
   },
+
+  subscribe: async (payload: {
+    email: string
+    consent: boolean
+    source?: string
+  }): Promise<{ subscribed: boolean }> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 500))
+      return { subscribed: true }
+    }
+    return fetcher("/api/subscribers", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  },
+
+  updateSubscriberDetails: async (payload: {
+    email: string
+    name?: string
+    age_range?: string
+    city?: string
+    occupation?: string
+    heard_from?: string
+  }): Promise<{ updated: boolean }> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 500))
+      return { updated: true }
+    }
+    return fetcher("/api/subscribers/details", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  },
 }
