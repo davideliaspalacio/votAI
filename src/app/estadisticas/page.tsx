@@ -12,6 +12,8 @@ import { AggregateAffinity } from "@/components/stats/AggregateAffinity"
 import { RegionMap } from "@/components/stats/RegionMap"
 import { AgeDistribution } from "@/components/stats/AgeDistribution"
 import { GapSankey } from "@/components/stats/GapSankey"
+import { MigrationHero } from "@/components/stats/MigrationHero"
+import { AffinityRanking } from "@/components/stats/AffinityRanking"
 import { DecisiveAxes } from "@/components/stats/DecisiveAxes"
 import { PolarizationChart } from "@/components/stats/PolarizationChart"
 import { UndecidedCard } from "@/components/stats/UndecidedCard"
@@ -142,6 +144,20 @@ export default function EstadisticasPage() {
           </div>
         ) : stats ? (
           <div className="mt-10 space-y-8">
+            {/* Row 0: Voto inicial declarado + migración por candidato */}
+            <MigrationHero
+              gapPct={stats.gap_national_pct}
+              data={stats.preference_vs_match}
+              initialPreferenceCounts={stats.initial_preference_counts}
+              total={stats.total_sessions}
+            />
+
+            {/* Ranking de afinidad real después del test */}
+            <AffinityRanking
+              data={stats.aggregate_affinity}
+              total={stats.total_sessions}
+            />
+
             {/* Row 1: Volume + Affinity */}
             <div className="grid gap-6 md:grid-cols-2">
               <VolumeCard
