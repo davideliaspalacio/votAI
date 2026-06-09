@@ -7,6 +7,7 @@ import { RankingList } from "@/components/results/RankingList"
 import { ShareButton } from "@/components/results/ShareButton"
 import { EnrichWithAiButton } from "@/components/results/EnrichWithAiButton"
 import { RunoffAxisBreakdown } from "./RunoffAxisBreakdown"
+import { VoteChangeQuestion } from "./VoteChangeQuestion"
 import { Disclaimer } from "@/components/common/Disclaimer"
 import { LegalFooter } from "@/components/common/LegalFooter"
 import { Header } from "@/components/common/Header"
@@ -151,6 +152,18 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
             {verdict}
           </p>
         </section>
+
+        {/* Pregunta opcional post-resultado: ¿reconsiderarías tu voto? (solo si hay brecha) */}
+        {!result.preference_match && winnerCandidate && (
+          <section className="mx-auto w-full max-w-2xl px-4">
+            <VoteChangeQuestion
+              sessionId={sessionId}
+              intentionName={intentionCandidate?.name ?? null}
+              topName={winnerCandidate.name}
+              initialAnswer={result.would_change_vote ?? null}
+            />
+          </section>
+        )}
 
         {/* Enrich with AI (solo si aún no fue enriquecido) */}
         {result.ai_enriched === false && (
