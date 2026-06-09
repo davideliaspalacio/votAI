@@ -15,7 +15,7 @@ interface RunoffAxisBreakdownProps {
   results: CandidateResult[]
 }
 
-// "El porqué" del resultado: compara, tema por tema, el plan de Cepeda contra el
+// "El porqué" del resultado: compara, tema por tema, el plan de Cepeda y el
 // de Abelardo. No depende del enriquecimiento con IA — usa las posturas reales
 // de cada plan que ya vienen en el resultado.
 export function RunoffAxisBreakdown({ results }: RunoffAxisBreakdownProps) {

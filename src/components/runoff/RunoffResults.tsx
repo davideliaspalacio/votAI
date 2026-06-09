@@ -15,7 +15,7 @@ import { ResultsSkeleton } from "@/components/common/Skeletons"
 import { api } from "@/lib/api"
 import { mockCandidates } from "@/lib/mock/candidates"
 import type { RunoffMatchResult } from "@/types/domain"
-import { RefreshCw, User, Trophy, Ban } from "lucide-react"
+import { RefreshCw, User, Check, Ban } from "lucide-react"
 
 interface RunoffResultsProps {
   sessionId: string
@@ -83,13 +83,13 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
       <Header />
 
       <div className="flex flex-1 flex-col space-y-16 py-12">
-        {/* Head-to-head hero */}
+        {/* Resultado: tu afinidad con los dos planes */}
         <section className="mx-auto w-full max-w-2xl px-4 text-center">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-text-subtle">
             Segunda vuelta · Afinidad programática
           </p>
           <h1 className="font-display text-2xl font-bold text-text sm:text-display-sm">
-            Cepeda <span className="text-text-subtle">vs</span> Abelardo
+            Tu afinidad con los dos planes
           </h1>
 
           <div className="mx-auto mt-8 flex max-w-lg flex-col gap-4">
@@ -110,7 +110,7 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
                 >
                   {isWinner && (
                     <span className="absolute -top-3 left-5 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-background">
-                      <Trophy className="size-3" />
+                      <Check className="size-3" />
                       Más afín
                     </span>
                   )}

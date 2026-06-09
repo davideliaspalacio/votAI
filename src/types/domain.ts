@@ -124,7 +124,7 @@ export interface MatchResult {
   ai_enriched?: boolean
 }
 
-// ── Segunda vuelta (runoff): Cepeda vs Abelardo ──
+// ── Segunda vuelta (runoff): Cepeda y Abelardo ──
 
 // IDs de los dos candidatos que disputan la segunda vuelta.
 export const RUNOFF_CANDIDATE_IDS = ["c1", "c2"] as const
