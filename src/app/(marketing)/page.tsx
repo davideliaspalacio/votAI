@@ -5,7 +5,7 @@ import { FirstRoundStatsHome } from "@/components/home/FirstRoundStatsHome"
 import { TrustSection } from "@/components/landing/TrustSection"
 
 export const metadata: Metadata = {
-  title: "VotoLoco - Segunda vuelta: Cepeda vs Abelardo. Sin enredos.",
+  title: "VotoLoco - Segunda vuelta: tu afinidad con los dos planes",
   description:
     "Descubre con cuál plan de gobierno tienes más afinidad en la segunda vuelta presidencial de Colombia 2026: Cepeda o Abelardo. No es una encuesta.",
 }

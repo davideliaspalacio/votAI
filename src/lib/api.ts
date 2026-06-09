@@ -96,7 +96,7 @@ export const api = {
     return fetcher(`/api/match/${sessionId}/enrich-ai`, { method: "POST" })
   },
 
-  // ── Segunda vuelta (runoff): Cepeda vs Abelardo ──
+  // ── Segunda vuelta (runoff): Cepeda y Abelardo ──
 
   getRunoffQuestions: async (sessionId?: string): Promise<Question[]> => {
     if (USE_MOCKS) return mockQuestions.slice(0, 10)
