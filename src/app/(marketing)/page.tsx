@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 import { Hero } from "@/components/landing/Hero"
+import { RunoffCta } from "@/components/landing/RunoffCta"
 import { HowItWorks } from "@/components/landing/HowItWorks"
 import { CandidateGrid } from "@/components/landing/CandidateGrid"
 import { TrustSection } from "@/components/landing/TrustSection"
@@ -14,6 +15,7 @@ export default function LandingPage() {
   return (
     <>
       <Hero />
+      <RunoffCta />
       <HowItWorks />
       <CandidateGrid />
       <TrustSection />

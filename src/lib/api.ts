@@ -5,10 +5,13 @@ import type {
   QuizAnswer,
   MatchResult,
   PublicStats,
+  RunoffSessionStartPayload,
+  RunoffMatchResult,
 } from "@/types/domain"
 import { mockCandidates } from "@/lib/mock/candidates"
 import { mockQuestions } from "@/lib/mock/questions"
 import { mockMatchResult } from "@/lib/mock/matchResult"
+import { mockRunoffResult } from "@/lib/mock/runoffResult"
 import { mockStats } from "@/lib/mock/stats"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? ""
@@ -91,6 +94,64 @@ export const api = {
       return { enriched: true, cached: false }
     }
     return fetcher(`/api/match/${sessionId}/enrich-ai`, { method: "POST" })
+  },
+
+  // ── Segunda vuelta (runoff): Cepeda vs Abelardo ──
+
+  getRunoffQuestions: async (sessionId?: string): Promise<Question[]> => {
+    if (USE_MOCKS) return mockQuestions.slice(0, 10)
+    const res = await fetcher<{ questions: Question[] }>(
+      `/api/runoff/questions?sessionId=${sessionId}`
+    )
+    return res.questions
+  },
+
+  startRunoffSession: async (
+    payload: RunoffSessionStartPayload
+  ): Promise<{ sessionId: string }> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 300))
+      return { sessionId: "mock-runoff-" + Date.now() }
+    }
+    return fetcher("/api/runoff/session/start", {
+      method: "POST",
+      body: JSON.stringify(payload),
+    })
+  },
+
+  submitRunoffMatch: async (
+    sessionId: string,
+    answers: QuizAnswer[]
+  ): Promise<{ status: "processing" | "done" }> => {
+    if (USE_MOCKS) {
+      return { status: "processing" }
+    }
+    return fetcher("/api/runoff/match", {
+      method: "POST",
+      body: JSON.stringify({ sessionId, answers }),
+    })
+  },
+
+  getRunoffMatchResult: async (
+    sessionId: string
+  ): Promise<RunoffMatchResult> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 500))
+      return mockRunoffResult
+    }
+    return fetcher<RunoffMatchResult>(`/api/runoff/match/${sessionId}`)
+  },
+
+  enrichRunoffMatchWithAi: async (
+    sessionId: string
+  ): Promise<{ enriched: boolean; cached?: boolean; reason?: string }> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 2000))
+      return { enriched: true, cached: false }
+    }
+    return fetcher(`/api/runoff/match/${sessionId}/enrich-ai`, {
+      method: "POST",
+    })
   },
 
   getPublicStats: async (): Promise<PublicStats> => {
