@@ -154,6 +154,20 @@ export const api = {
     })
   },
 
+  submitRunoffVoteFeedback: async (
+    sessionId: string,
+    wouldChange: "yes" | "no"
+  ): Promise<{ saved: boolean }> => {
+    if (USE_MOCKS) {
+      await new Promise((r) => setTimeout(r, 300))
+      return { saved: true }
+    }
+    return fetcher(`/api/runoff/match/${sessionId}/vote-feedback`, {
+      method: "POST",
+      body: JSON.stringify({ wouldChange }),
+    })
+  },
+
   getPublicStats: async (): Promise<PublicStats> => {
     if (USE_MOCKS) return mockStats
     return fetcher<PublicStats>("/api/stats/public")

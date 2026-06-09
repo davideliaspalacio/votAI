@@ -177,6 +177,7 @@ export interface RunoffMatchResult {
   results: CandidateResult[]
   preference_match: boolean
   ai_enriched?: boolean
+  would_change_vote?: "yes" | "no" | null
 }
 
 // ── Public Stats ──
