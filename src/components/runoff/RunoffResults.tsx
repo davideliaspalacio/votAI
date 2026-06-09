@@ -4,8 +4,9 @@ import { useEffect, useState, useCallback } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { RankingList } from "@/components/results/RankingList"
-import { AxisBreakdown } from "@/components/results/AxisBreakdown"
+import { ShareButton } from "@/components/results/ShareButton"
 import { EnrichWithAiButton } from "@/components/results/EnrichWithAiButton"
+import { RunoffAxisBreakdown } from "./RunoffAxisBreakdown"
 import { Disclaimer } from "@/components/common/Disclaimer"
 import { LegalFooter } from "@/components/common/LegalFooter"
 import { Header } from "@/components/common/Header"
@@ -165,8 +166,20 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
         {/* Ranking (2 candidatos) */}
         <RankingList results={result.results} />
 
-        {/* Detalle por eje del plan más afín */}
-        <AxisBreakdown topResults={result.results.slice(0, 1)} />
+        {/* ¿Por qué? Comparación de los dos planes, tema por tema */}
+        <RunoffAxisBreakdown results={result.results} />
+
+        {/* Compartir resultados (con imagen para redes) */}
+        <section className="mx-auto w-full max-w-2xl px-4">
+          <ShareButton
+            candidateName={winnerCandidate?.name ?? ""}
+            score={winner.score}
+            sessionId={sessionId}
+            topResults={result.results}
+            initialPreference={result.runoff_intention}
+            resultPath="/segunda-vuelta/resultados/"
+          />
+        </section>
 
         {/* Acciones y disclaimer */}
         <section className="mx-auto max-w-2xl space-y-6 px-4">

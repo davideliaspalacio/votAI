@@ -20,6 +20,9 @@ interface ShareButtonProps {
   sessionId: string
   topResults?: CandidateResult[]
   initialPreference?: string
+  // Prefijo de ruta del resultado para el link a compartir.
+  // Por defecto el del test de primera vuelta; segunda vuelta pasa el suyo.
+  resultPath?: string
 }
 
 function getAffinityMessage(score: number): string {
@@ -68,13 +71,14 @@ export function ShareButton({
   sessionId,
   topResults,
   initialPreference,
+  resultPath = "/resultados/",
 }: ShareButtonProps) {
   const [copied, setCopied] = useState(false)
   const prefersReduced = useReducedMotion()
 
   const origin = typeof window !== "undefined" ? window.location.origin : ""
   const host = typeof window !== "undefined" ? window.location.host : ""
-  const shareUrl = `${origin}/resultados/${sessionId}`
+  const shareUrl = `${origin}${resultPath}${sessionId}`
 
   const shareText = `Hice el test de afinidad en ${host} \u2014 mi mayor afinidad es con ${candidateName} (${score}%)`
 
