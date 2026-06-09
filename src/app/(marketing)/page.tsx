@@ -1,21 +1,19 @@
 import type { Metadata } from "next"
 import { Hero } from "@/components/landing/Hero"
-import { RunoffCta } from "@/components/landing/RunoffCta"
 import { HowItWorks } from "@/components/landing/HowItWorks"
 import { CandidateGrid } from "@/components/landing/CandidateGrid"
 import { TrustSection } from "@/components/landing/TrustSection"
 
 export const metadata: Metadata = {
-  title: "VotoLoco - 10 preguntas. Tu candidato real. Sin enredos.",
+  title: "VotoLoco - Segunda vuelta: Cepeda vs Abelardo. Sin enredos.",
   description:
-    "Descubre qué candidato presidencial de Colombia 2026 se alinea con lo que piensas. Test de afinidad programática. No es una encuesta.",
+    "Descubre con cuál plan de gobierno tienes más afinidad en la segunda vuelta presidencial de Colombia 2026: Cepeda o Abelardo. No es una encuesta.",
 }
 
 export default function LandingPage() {
   return (
     <>
       <Hero />
-      <RunoffCta />
       <HowItWorks />
       <CandidateGrid />
       <TrustSection />

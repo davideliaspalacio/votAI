@@ -31,7 +31,7 @@ export function Hero() {
 
         <div className="animate-fade-up" style={{ animationDelay: "0.1s" }}>
           <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-surface-border bg-surface px-4 py-1.5 text-sm text-text-muted">
-            Elecciones Colombia 2026
+            Segunda vuelta · Colombia 2026
           </div>
         </div>
 
@@ -39,25 +39,25 @@ export function Hero() {
           className="font-display text-4xl font-bold leading-tight tracking-tight text-text sm:text-5xl md:text-display-xl animate-fade-up"
           style={{ animationDelay: "0.2s" }}
         >
-          ¿Estás seguro por quién{" "}
-          <span className="text-primary">vas a votar?</span>
+          ¿Estás seguro de tu voto en{" "}
+          <span className="text-primary">segunda vuelta?</span>
         </h1>
 
         <p
           className="mx-auto mt-6 max-w-2xl text-lg text-text-muted md:text-xl animate-fade-up"
           style={{ animationDelay: "0.3s" }}
         >
-          Responde 10 preguntas y descubre si tu candidato realmente representa
-          lo que piensas. Sin sesgos, sin enredos.
+          Responde 10 preguntas y descubre con cuál de los dos planes —Cepeda o
+          Abelardo— tienes más afinidad. Sin sesgos, sin enredos.
         </p>
 
         <div
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-up"
           style={{ animationDelay: "0.4s" }}
         >
-          <Link href="/onboarding">
+          <Link href="/segunda-vuelta/onboarding">
             <Button variant="brutal" size="lg" className="gap-2 px-8 py-6 text-lg">
-              Empezar test
+              Hacer el test
               <ArrowRight className="size-5" />
             </Button>
           </Link>
