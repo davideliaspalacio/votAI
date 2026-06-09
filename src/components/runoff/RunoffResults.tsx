@@ -92,7 +92,7 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
             Cepeda <span className="text-text-subtle">vs</span> Abelardo
           </h1>
 
-          <div className="mt-8 grid grid-cols-2 gap-3 sm:gap-6">
+          <div className="mx-auto mt-8 flex max-w-lg flex-col gap-4">
             {[winner, runnerUp].map((r, i) => {
               const candidate = mockCandidates.find(
                 (c) => c.id === r.candidateId
@@ -102,46 +102,54 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
               return (
                 <div
                   key={r.candidateId}
-                  className="relative flex flex-col items-center gap-3 rounded-brutal border-2 px-4 py-6"
+                  className="relative flex items-center gap-4 rounded-brutal border-2 px-5 py-4"
                   style={{
                     borderColor: isWinner ? candidate.color : "var(--surface-border)",
                     boxShadow: isWinner ? `4px 4px 0px 0px ${candidate.color}` : undefined,
                   }}
                 >
                   {isWinner && (
-                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-background">
+                    <span className="absolute -top-3 left-5 inline-flex items-center gap-1 rounded-full bg-primary px-3 py-0.5 text-xs font-bold text-background">
                       <Trophy className="size-3" />
                       Más afín
                     </span>
                   )}
                   <div
-                    className="flex size-16 items-center justify-center rounded-full"
+                    className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-full"
                     style={{ backgroundColor: candidate.color + "20" }}
                   >
                     {candidate.photo ? (
                       <img
                         src={candidate.photo}
                         alt={candidate.name}
-                        className="size-full rounded-full object-cover"
+                        className="size-full object-cover"
                       />
                     ) : (
-                      <User
-                        className="size-8"
-                        style={{ color: candidate.color }}
-                      />
+                      <User className="size-7" style={{ color: candidate.color }} />
                     )}
                   </div>
-                  <div>
-                    <p className="font-display text-sm font-bold text-text">
+                  <div className="min-w-0 flex-1 text-left">
+                    <p className="font-display text-base font-bold text-text">
                       {candidate.name}
                     </p>
                     <p className="text-xs text-text-subtle">{candidate.party}</p>
                   </div>
-                  <div
-                    className="font-display text-3xl font-bold"
-                    style={{ color: isWinner ? "var(--primary)" : undefined }}
-                  >
-                    {r.score}%
+                  <div className="text-right">
+                    <div
+                      className={
+                        isWinner
+                          ? "font-display text-3xl font-bold"
+                          : "font-display text-3xl font-bold text-text-muted"
+                      }
+                      style={isWinner ? { color: "var(--primary)" } : undefined}
+                    >
+                      {r.score}%
+                    </div>
+                    {!isWinner && (
+                      <p className="text-[10px] uppercase tracking-wider text-text-subtle">
+                        Menos afín
+                      </p>
+                    )}
                   </div>
                 </div>
               )
