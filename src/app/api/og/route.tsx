@@ -115,7 +115,7 @@ export async function GET(request: NextRequest) {
                 lineHeight: 1.2,
               }}
             >
-              ¿Estás seguro por quién vas a votar?
+              ¿Con cuál plan coincides en segunda vuelta?
             </div>
             <div
               style={{
@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
                 maxWidth: "800px",
               }}
             >
-              Responde 10 preguntas y descubre tu afinidad con los candidatos presidenciales de Colombia 2026
+              Responde 10 preguntas y descubre con cuál de los dos planes —Cepeda o Abelardo— tienes más afinidad
             </div>
             <div
               style={{
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
                 textAlign: "center",
               }}
             >
-              Test de afinidad programática · No es una encuesta
+              Segunda vuelta · Colombia 2026 · No es una encuesta
             </div>
           </>
         )}
