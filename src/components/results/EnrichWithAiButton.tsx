@@ -8,6 +8,11 @@ import { api } from "@/lib/api"
 interface EnrichWithAiButtonProps {
   sessionId: string
   onEnriched: () => Promise<void> | void
+  // Permite reutilizar el botón con otra fuente de enriquecimiento
+  // (p. ej. segunda vuelta). Por defecto usa el match de primera vuelta.
+  enrich?: (
+    sessionId: string
+  ) => Promise<{ enriched: boolean; cached?: boolean; reason?: string }>
 }
 
 type State = "idle" | "loading" | "error"
@@ -15,6 +20,7 @@ type State = "idle" | "loading" | "error"
 export function EnrichWithAiButton({
   sessionId,
   onEnriched,
+  enrich,
 }: EnrichWithAiButtonProps) {
   const [state, setState] = useState<State>("idle")
   const inFlight = useRef(false)
@@ -24,7 +30,7 @@ export function EnrichWithAiButton({
     inFlight.current = true
     setState("loading")
     try {
-      const res = await api.enrichMatchWithAi(sessionId)
+      const res = await (enrich ?? api.enrichMatchWithAi)(sessionId)
       if (!res.enriched) {
         setState("error")
         return

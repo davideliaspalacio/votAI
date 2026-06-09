@@ -1,11 +1,6 @@
-import type { Metadata } from "next"
-import { AnalyzingAnimation } from "@/components/analyzing/AnalyzingAnimation"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = {
-  title: "Analizando tus respuestas",
-  description: "Estamos comparando tus respuestas con las propuestas de cada candidato.",
-}
-
+// El test de primera vuelta se retiró de la UI: solo queda el de segunda vuelta.
 export default function AnalyzingPage() {
-  return <AnalyzingAnimation />
+  redirect("/segunda-vuelta/onboarding")
 }

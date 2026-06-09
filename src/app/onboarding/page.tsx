@@ -1,12 +1,6 @@
-import type { Metadata } from "next"
-import { OnboardingForm } from "@/components/onboarding/OnboardingForm"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = {
-  title: "Datos básicos",
-  description:
-    "Cuéntanos un poco sobre ti antes de empezar el test de afinidad programática.",
-}
-
+// El test de primera vuelta se retiró de la UI: solo queda el de segunda vuelta.
 export default function OnboardingPage() {
-  return <OnboardingForm />
+  redirect("/segunda-vuelta/onboarding")
 }

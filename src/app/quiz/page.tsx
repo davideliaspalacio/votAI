@@ -1,12 +1,6 @@
-import type { Metadata } from "next"
-import { QuizContainer } from "@/components/quiz/QuizContainer"
+import { redirect } from "next/navigation"
 
-export const metadata: Metadata = {
-  title: "Test de afinidad programática",
-  description:
-    "Responde 10 preguntas sobre los temas que importan y descubre tu afinidad con los candidatos.",
-}
-
+// El test de primera vuelta se retiró de la UI: solo queda el de segunda vuelta.
 export default function QuizPage() {
-  return <QuizContainer />
+  redirect("/segunda-vuelta/onboarding")
 }

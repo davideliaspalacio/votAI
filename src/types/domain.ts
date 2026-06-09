@@ -124,6 +124,61 @@ export interface MatchResult {
   ai_enriched?: boolean
 }
 
+// ── Segunda vuelta (runoff): Cepeda vs Abelardo ──
+
+// IDs de los dos candidatos que disputan la segunda vuelta.
+export const RUNOFF_CANDIDATE_IDS = ["c1", "c2"] as const
+
+export type Estrato = "1" | "2" | "3" | "4" | "5" | "6" | "na"
+
+export const STRATA: { value: Estrato; label: string }[] = [
+  { value: "1", label: "Estrato 1" },
+  { value: "2", label: "Estrato 2" },
+  { value: "3", label: "Estrato 3" },
+  { value: "4", label: "Estrato 4" },
+  { value: "5", label: "Estrato 5" },
+  { value: "6", label: "Estrato 6" },
+  { value: "na", label: "Prefiero no decir" },
+]
+
+export type AcademicLevel =
+  | "primaria"
+  | "bachillerato"
+  | "tecnico"
+  | "pregrado"
+  | "posgrado"
+  | "na"
+
+export const ACADEMIC_LEVELS: { value: AcademicLevel; label: string }[] = [
+  { value: "primaria", label: "Primaria" },
+  { value: "bachillerato", label: "Bachillerato" },
+  { value: "tecnico", label: "Técnico / Tecnológico" },
+  { value: "pregrado", label: "Pregrado" },
+  { value: "posgrado", label: "Posgrado" },
+  { value: "na", label: "Prefiero no decir" },
+]
+
+export interface RunoffSessionStartPayload {
+  age_range: AgeRange
+  region: Region
+  gender?: Gender
+  estrato: Estrato
+  academic_level: AcademicLevel
+  // candidateId (c1..c6) | "blank" | "no_vote" | "na"
+  first_round_vote: string
+  // "c1" | "c2" | "blank" | "undecided" | "na"
+  runoff_intention: string
+}
+
+export interface RunoffMatchResult {
+  status: "processing" | "done" | "failed"
+  runoff_intention: string
+  first_round_vote: string
+  results: CandidateResult[]
+  preference_match: boolean
+  ai_enriched?: boolean
+}
+
 // ── Public Stats ──
 
 export interface PublicStats {
