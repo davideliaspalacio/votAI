@@ -186,14 +186,14 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
           </p>
         </section>
 
-        {/* Pregunta opcional post-resultado: ¿reconsiderarías tu voto? (solo si hay brecha) */}
-        {!result.preference_match && winnerCandidate && (
+        {/* Pregunta opcional post-resultado: ¿afinidad o intención? (solo si hay brecha y había intención) */}
+        {!result.preference_match && winnerCandidate && intentionCandidate && (
           <section className="mx-auto w-full max-w-2xl px-4">
             <VoteChangeQuestion
               sessionId={sessionId}
-              intentionName={intentionCandidate?.name ?? null}
+              intentionName={intentionCandidate.name}
               topName={winnerCandidate.name}
-              initialAnswer={result.would_change_vote ?? null}
+              initialChoice={result.vote_choice ?? null}
             />
           </section>
         )}
