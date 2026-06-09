@@ -38,11 +38,11 @@ export function Hero() {
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">
         <div
           className="absolute left-0 top-10 h-[420px] w-[520px] -translate-x-1/3 rounded-full blur-[130px]"
-          style={{ backgroundColor: cepeda.color + "1A" }}
+          style={{ backgroundColor: "#FF4D6D1A" }}
         />
         <div
           className="absolute right-0 top-10 h-[420px] w-[520px] translate-x-1/3 rounded-full blur-[130px]"
-          style={{ backgroundColor: "#FF4D6D1A" }}
+          style={{ backgroundColor: cepeda.color + "1A" }}
         />
       </div>
 
@@ -66,12 +66,14 @@ export function Hero() {
             animate="show"
             className="flex flex-1 flex-col items-center gap-3 sm:flex-none"
           >
-            <CandidatePhoto candidate={cepeda} />
+            <CandidatePhoto candidate={abelardo} />
             <div>
               <p className="font-display text-base font-bold text-text sm:text-lg">
-                {cepeda.name}
+                {abelardo.name}
               </p>
-              <p className="text-xs text-text-subtle sm:text-sm">{cepeda.party}</p>
+              <p className="text-xs text-text-subtle sm:text-sm">
+                {abelardo.party}
+              </p>
             </div>
           </motion.div>
 
@@ -81,14 +83,12 @@ export function Hero() {
             animate="show"
             className="flex flex-1 flex-col items-center gap-3 sm:flex-none"
           >
-            <CandidatePhoto candidate={abelardo} />
+            <CandidatePhoto candidate={cepeda} />
             <div>
               <p className="font-display text-base font-bold text-text sm:text-lg">
-                {abelardo.name}
+                {cepeda.name}
               </p>
-              <p className="text-xs text-text-subtle sm:text-sm">
-                {abelardo.party}
-              </p>
+              <p className="text-xs text-text-subtle sm:text-sm">{cepeda.party}</p>
             </div>
           </motion.div>
         </div>
