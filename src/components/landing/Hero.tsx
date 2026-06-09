@@ -112,8 +112,9 @@ export function Hero() {
           animate="show"
           className="mx-auto mt-6 max-w-2xl text-lg text-text-muted md:text-xl"
         >
-          Responde 10 preguntas y descubre con cuál de los dos planes —Cepeda o
-          Abelardo— tienes más afinidad programática. Anónimo y sin enredos.
+          Responde 10 preguntas y descubre con cuál de los dos programas de
+          gobierno —Cepeda o Abelardo— tienes más afinidad programática. Anónimo
+          y sin enredos.
         </motion.p>
 
         <motion.div
