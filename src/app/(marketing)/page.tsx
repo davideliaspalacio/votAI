@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Hero } from "@/components/landing/Hero"
 import { HowItWorks } from "@/components/landing/HowItWorks"
-import { CandidateGrid } from "@/components/landing/CandidateGrid"
+import { FirstRoundStatsHome } from "@/components/home/FirstRoundStatsHome"
 import { TrustSection } from "@/components/landing/TrustSection"
 
 export const metadata: Metadata = {
@@ -15,7 +15,7 @@ export default function LandingPage() {
     <>
       <Hero />
       <HowItWorks />
-      <CandidateGrid />
+      <FirstRoundStatsHome />
       <TrustSection />
     </>
   )
