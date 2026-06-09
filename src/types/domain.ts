@@ -177,7 +177,8 @@ export interface RunoffMatchResult {
   results: CandidateResult[]
   preference_match: boolean
   ai_enriched?: boolean
-  would_change_vote?: "yes" | "no" | null
+  // A la hora de votar, ¿se va por su afinidad o por su intención?
+  vote_choice?: "affinity" | "intention" | null
   // % de temas donde eligió "ninguno de los dos" (voto en blanco).
   blank_pct?: number
 }

@@ -125,7 +125,7 @@ export function Hero() {
         >
           <Link href="/segunda-vuelta/onboarding">
             <Button variant="brutal" size="lg" className="gap-2 px-8 py-6 text-lg">
-              Hacer el test
+              Hacer test de segunda vuelta
               <ArrowRight className="size-5" />
             </Button>
           </Link>

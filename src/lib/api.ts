@@ -156,7 +156,7 @@ export const api = {
 
   submitRunoffVoteFeedback: async (
     sessionId: string,
-    wouldChange: "yes" | "no"
+    voteChoice: "affinity" | "intention"
   ): Promise<{ saved: boolean }> => {
     if (USE_MOCKS) {
       await new Promise((r) => setTimeout(r, 300))
@@ -164,7 +164,7 @@ export const api = {
     }
     return fetcher(`/api/runoff/match/${sessionId}/vote-feedback`, {
       method: "POST",
-      body: JSON.stringify({ wouldChange }),
+      body: JSON.stringify({ voteChoice }),
     })
   },
 
