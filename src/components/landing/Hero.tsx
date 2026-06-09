@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
-import { ArrowRight, Swords, User } from "lucide-react"
+import { ArrowRight, Vote, User } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { SessionCounter } from "./SessionCounter"
 import { mockCandidates } from "@/lib/mock/candidates"
@@ -23,18 +23,6 @@ export function Hero() {
     },
   })
 
-  const pop = {
-    hidden: prefersReduced
-      ? { opacity: 0 }
-      : { opacity: 0, scale: 0, rotate: -20 },
-    show: {
-      opacity: 1,
-      scale: 1,
-      rotate: 0,
-      transition: { type: "spring" as const, stiffness: 260, damping: 14, delay: 0.25 },
-    },
-  }
-
   const fadeUp = {
     hidden: prefersReduced ? { opacity: 0 } : { opacity: 0, y: 16 },
     show: (i: number) => ({
@@ -52,7 +40,8 @@ export function Hero() {
           className="absolute left-0 top-10 h-[420px] w-[520px] -translate-x-1/3 rounded-full blur-[130px]"
           style={{ backgroundColor: cepeda.color + "1A" }}
         />
-        <div className="absolute right-0 top-10 h-[420px] w-[520px] translate-x-1/3 rounded-full blur-[130px]"
+        <div
+          className="absolute right-0 top-10 h-[420px] w-[520px] translate-x-1/3 rounded-full blur-[130px]"
           style={{ backgroundColor: "#FF4D6D1A" }}
         />
       </div>
@@ -65,12 +54,12 @@ export function Hero() {
           transition={{ duration: 0.4 }}
           className="mb-10 inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-4 py-1.5 text-sm font-semibold text-accent"
         >
-          <Swords className="size-4" />
+          <Vote className="size-4" />
           Segunda vuelta · Colombia 2026
         </motion.div>
 
-        {/* Head-to-head */}
-        <div className="mb-10 flex items-start justify-center gap-3 sm:gap-8">
+        {/* Los dos candidatos */}
+        <div className="mb-10 flex items-start justify-center gap-8 sm:gap-16">
           <motion.div
             variants={side(-1)}
             initial="hidden"
@@ -83,19 +72,6 @@ export function Hero() {
                 {cepeda.name}
               </p>
               <p className="text-xs text-text-subtle sm:text-sm">{cepeda.party}</p>
-            </div>
-          </motion.div>
-
-          <motion.div
-            variants={pop}
-            initial="hidden"
-            animate="show"
-            className="shrink-0 pt-5 sm:pt-8"
-          >
-            <div className="flex size-14 items-center justify-center rounded-full border-2 border-accent bg-accent/10 shadow-brutal-accent sm:size-16">
-              <span className="font-display text-xl font-extrabold text-accent sm:text-2xl">
-                VS
-              </span>
             </div>
           </motion.div>
 
