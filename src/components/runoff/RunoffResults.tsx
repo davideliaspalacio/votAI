@@ -15,7 +15,7 @@ import { ResultsSkeleton } from "@/components/common/Skeletons"
 import { api } from "@/lib/api"
 import { mockCandidates } from "@/lib/mock/candidates"
 import type { RunoffMatchResult } from "@/types/domain"
-import { RefreshCw, User, Trophy } from "lucide-react"
+import { RefreshCw, User, Trophy, Ban } from "lucide-react"
 
 interface RunoffResultsProps {
   sessionId: string
@@ -154,6 +154,31 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
                 </div>
               )
             })}
+
+            {/* Voto en blanco: % de temas donde no coincidió con ninguno */}
+            {typeof result.blank_pct === "number" && (
+              <div className="flex items-center gap-4 rounded-brutal border-2 border-dashed border-surface-border px-5 py-4 opacity-80">
+                <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-surface-border/40">
+                  <Ban className="size-6 text-text-subtle" />
+                </div>
+                <div className="min-w-0 flex-1 text-left">
+                  <p className="font-display text-base font-bold text-text">
+                    Voto en blanco
+                  </p>
+                  <p className="text-xs text-text-subtle">
+                    No coincidiste con ninguno de los dos planes
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="font-display text-3xl font-bold text-text-muted">
+                    {result.blank_pct}%
+                  </div>
+                  <p className="text-[10px] uppercase tracking-wider text-text-subtle">
+                    de los temas
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           <p className="mx-auto mt-6 max-w-lg text-sm text-text-muted">

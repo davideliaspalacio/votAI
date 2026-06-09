@@ -12,6 +12,7 @@ export const mockRunoffResult: RunoffMatchResult = {
   first_round_vote: "c3",
   preference_match: true,
   ai_enriched: false,
+  blank_pct: 20,
   results: [
     { ...c1, score: 71 },
     { ...c2, score: 52 },

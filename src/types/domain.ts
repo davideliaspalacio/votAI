@@ -178,6 +178,8 @@ export interface RunoffMatchResult {
   preference_match: boolean
   ai_enriched?: boolean
   would_change_vote?: "yes" | "no" | null
+  // % de temas donde eligió "ninguno de los dos" (voto en blanco).
+  blank_pct?: number
 }
 
 // ── Public Stats ──
