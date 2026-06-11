@@ -183,6 +183,12 @@ export const api = {
     consent: boolean
     source?: string
     website?: string
+    // Demográficos del test (opcionales), adjuntados desde los resultados.
+    age_range?: string
+    region?: string
+    gender?: string
+    estrato?: string
+    academic_level?: string
   }): Promise<{ subscribed: boolean }> => {
     if (USE_MOCKS) {
       await new Promise((r) => setTimeout(r, 500))

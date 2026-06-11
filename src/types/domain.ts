@@ -181,6 +181,14 @@ export interface RunoffMatchResult {
   vote_choice?: "affinity" | "intention" | null
   // % de temas donde eligió "ninguno de los dos" (voto en blanco).
   blank_pct?: number
+  // Demográficos del test, para adjuntar al suscribirse (solo demográficos).
+  demographics?: {
+    age_range?: string | null
+    region?: string | null
+    gender?: string | null
+    estrato?: string | null
+    academic_level?: string | null
+  }
 }
 
 // ── Public Stats ──
