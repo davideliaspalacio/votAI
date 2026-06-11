@@ -12,9 +12,10 @@ export const mockRunoffResult: RunoffMatchResult = {
   first_round_vote: "c3",
   preference_match: true,
   ai_enriched: false,
-  blank_pct: 20,
+  // Reparto: c1 + c2 + voto en blanco suman 100.
+  blank_pct: 15,
   results: [
-    { ...c1, score: 71 },
-    { ...c2, score: 52 },
+    { ...c1, score: 60 },
+    { ...c2, score: 25 },
   ],
 }
