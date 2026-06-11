@@ -8,6 +8,7 @@ import { ShareButton } from "@/components/results/ShareButton"
 import { EnrichWithAiButton } from "@/components/results/EnrichWithAiButton"
 import { RunoffAxisBreakdown } from "./RunoffAxisBreakdown"
 import { VoteChangeQuestion } from "./VoteChangeQuestion"
+import { SubscribeModal } from "@/components/results/SubscribeModal"
 import { Disclaimer } from "@/components/common/Disclaimer"
 import { LegalFooter } from "@/components/common/LegalFooter"
 import { Header } from "@/components/common/Header"
@@ -26,6 +27,7 @@ const SPECIAL_INTENTIONS = ["blank", "undecided", "na", "no_vote"]
 export function RunoffResults({ sessionId }: RunoffResultsProps) {
   const [result, setResult] = useState<RunoffMatchResult | null>(null)
   const [error, setError] = useState(false)
+  const [showSubscribe, setShowSubscribe] = useState(false)
 
   useEffect(() => {
     if (!sessionId) return
@@ -39,6 +41,30 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
     const fresh = await api.getRunoffMatchResult(sessionId)
     setResult(fresh)
   }, [sessionId])
+
+  // Modal de suscripción: aparece una sola vez, ~4s después de cargar los
+  // resultados. No reaparece si ya se mostró o si ya está suscrito.
+  useEffect(() => {
+    if (!result || result.status !== "done") return
+    try {
+      if (
+        localStorage.getItem("votoloco_subscribed_email") ||
+        localStorage.getItem("votoloco_subscribe_seen")
+      )
+        return
+    } catch {
+      return
+    }
+    const t = setTimeout(() => {
+      setShowSubscribe(true)
+      try {
+        localStorage.setItem("votoloco_subscribe_seen", "1")
+      } catch {
+        // ignore
+      }
+    }, 4000)
+    return () => clearTimeout(t)
+  }, [result])
 
   if (error) {
     return (
@@ -245,6 +271,13 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
           <LegalFooter />
         </div>
       </div>
+
+      <SubscribeModal
+        open={showSubscribe}
+        onOpenChange={setShowSubscribe}
+        source="segunda-vuelta-resultados"
+        demographics={result.demographics}
+      />
     </div>
   )
 }

@@ -8,6 +8,20 @@ import { api } from "@/lib/api"
 
 interface SubscribeCardProps {
   source?: string
+  /** Demográficos del test para adjuntar al suscribirse (solo demográficos). */
+  demographics?: {
+    age_range?: string | null
+    region?: string | null
+    gender?: string | null
+    estrato?: string | null
+    academic_level?: string | null
+  }
+  /** Si true, tras suscribir va directo a "gracias" (sin pedir datos manuales). */
+  skipDetails?: boolean
+  /** Si true, quita el borde/fondo de tarjeta (para embeber en un modal). */
+  bare?: boolean
+  /** Se llama al llegar a "gracias" (p.ej. para cerrar el modal). */
+  onSubscribed?: () => void
 }
 
 type Phase = "form" | "details" | "thanks"
@@ -51,7 +65,13 @@ const HEARD_FROM = [
   { value: "otro", label: "Otro" },
 ]
 
-export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
+export function SubscribeCard({
+  source = "resultados",
+  demographics,
+  skipDetails = false,
+  bare = false,
+  onSubscribed,
+}: SubscribeCardProps) {
   const [phase, setPhase] = useState<Phase>("form")
   const [email, setEmail] = useState("")
   const [emailTouched, setEmailTouched] = useState(false)
@@ -73,11 +93,15 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
   // Honeypot: humanos lo dejan vacío, bots tienden a llenarlo
   const [website, setWebsite] = useState("")
 
-  // Si ya se suscribió desde este navegador, saltamos directo a "thanks"
+  // Si ya se suscribió desde este navegador, saltamos directo a "thanks".
+  // Init client-only desde localStorage: el effect corre tras hidratar, así que
+  // setState aquí es correcto (un init lazy leería localStorage en SSR y rompería
+  // la hidratación).
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setEmail(saved)
         setPhase("thanks")
       }
@@ -106,13 +130,23 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
         consent,
         source,
         website,
+        age_range: demographics?.age_range ?? undefined,
+        region: demographics?.region ?? undefined,
+        gender: demographics?.gender ?? undefined,
+        estrato: demographics?.estrato ?? undefined,
+        academic_level: demographics?.academic_level ?? undefined,
       })
       try {
         localStorage.setItem(STORAGE_KEY, email.trim())
       } catch {
         // ignore
       }
-      setPhase("details")
+      if (skipDetails) {
+        setPhase("thanks")
+        onSubscribed?.()
+      } else {
+        setPhase("details")
+      }
     } catch (err) {
       const msg =
         err instanceof Error ? err.message : "No se pudo guardar la suscripción"
@@ -147,7 +181,13 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
 
   if (phase === "thanks") {
     return (
-      <div className="rounded-brutal border-2 border-primary/40 bg-primary/5 p-6 text-center">
+      <div
+        className={
+          bare
+            ? "text-center"
+            : "rounded-brutal border-2 border-primary/40 bg-primary/5 p-6 text-center"
+        }
+      >
         <CheckCircle2 className="mx-auto size-10 text-primary" />
         <h3 className="mt-3 font-display text-lg font-bold text-text">
           ¡Gracias por suscribirte!
@@ -274,7 +314,9 @@ export function SubscribeCard({ source = "resultados" }: SubscribeCardProps) {
   return (
     <form
       onSubmit={handleSubscribe}
-      className="rounded-brutal border-2 border-surface-border bg-surface p-6"
+      className={
+        bare ? "" : "rounded-brutal border-2 border-surface-border bg-surface p-6"
+      }
     >
       <div className="flex items-center gap-2">
         <Mail className="size-5 text-primary" />
