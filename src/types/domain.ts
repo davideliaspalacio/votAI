@@ -214,3 +214,53 @@ export interface PublicStats {
   polarization_by_axis: { axis: string; polarizationScore: number }[]
   undecided_pct: number
 }
+
+export interface CountPct {
+  value: string
+  count: number
+  pct: number
+}
+
+export interface RunoffAffinityStat {
+  candidateId: string
+  count: number
+  pct: number
+  avgScore: number
+}
+
+export interface RunoffFlowStat {
+  fromCandidateId: string
+  total: number
+  to: { candidateId: string; count: number; pct: number }[]
+}
+
+export interface RunoffSegmentStat {
+  segment: string
+  total: number
+  distribution: { candidateId: string; count: number; pct: number }[]
+  matchPct: number
+  blankPct: number
+}
+
+export interface RunoffStats {
+  total_sessions: number
+  last_updated: string
+  aggregate_affinity: RunoffAffinityStat[]
+  runoff_intention_counts: CountPct[]
+  first_round_vote_counts: CountPct[]
+  transfer_from_first_round: RunoffFlowStat[]
+  intention_vs_affinity: RunoffFlowStat[]
+  preference_match_pct: number
+  preference_match_total: number
+  vote_choice_counts: CountPct[]
+  blank_vote_pct: number
+  closest_race_pct: number
+  avg_margin: number
+  by_region: RunoffSegmentStat[]
+  by_age: RunoffSegmentStat[]
+  by_gender: RunoffSegmentStat[]
+  by_estrato: RunoffSegmentStat[]
+  by_academic_level: RunoffSegmentStat[]
+  decisive_axes: { axis: string; avgWeight: number }[]
+  polarization_by_axis: { axis: string; polarizationScore: number }[]
+}

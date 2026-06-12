@@ -5,6 +5,7 @@ import type {
   QuizAnswer,
   MatchResult,
   PublicStats,
+  RunoffStats,
   RunoffSessionStartPayload,
   RunoffMatchResult,
 } from "@/types/domain"
@@ -13,12 +14,17 @@ import { mockQuestions } from "@/lib/mock/questions"
 import { mockMatchResult } from "@/lib/mock/matchResult"
 import { mockRunoffResult } from "@/lib/mock/runoffResult"
 import { mockStats } from "@/lib/mock/stats"
+import { mockRunoffStats } from "@/lib/mock/runoffStats"
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL ?? ""
 const USE_MOCKS = process.env.NEXT_PUBLIC_USE_MOCKS === "true"
 
-async function fetcher<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE}${path}`, {
+async function fetcher<T>(
+  path: string,
+  options?: RequestInit,
+  baseUrl = API_BASE
+): Promise<T> {
+  const res = await fetch(`${baseUrl}${path}`, {
     ...options,
     headers: {
       "Content-Type": "application/json",
@@ -170,7 +176,12 @@ export const api = {
 
   getPublicStats: async (): Promise<PublicStats> => {
     if (USE_MOCKS) return mockStats
-    return fetcher<PublicStats>("/api/stats/public")
+    return fetcher<PublicStats>("/api/stats/public", undefined, "")
+  },
+
+  getRunoffStats: async (): Promise<RunoffStats> => {
+    if (USE_MOCKS) return mockRunoffStats
+    return fetcher<RunoffStats>("/api/stats/runoff", undefined, "")
   },
 
   getSessionCount: async (): Promise<{ total_sessions: number }> => {
