@@ -112,8 +112,8 @@ export function Hero() {
           animate="show"
           className="mx-auto mt-6 max-w-2xl text-lg text-text-muted md:text-xl"
         >
-          Responde 10 preguntas y descubre con cuál de los dos planes —Cepeda o
-          Abelardo— tienes más afinidad programática. Anónimo y sin enredos.
+          El test ya cerró. Gracias a todos los que participaron: aquí quedan
+          las estadísticas de afinidad programática entre Cepeda y Abelardo.
         </motion.p>
 
         <motion.div
@@ -123,9 +123,9 @@ export function Hero() {
           animate="show"
           className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
         >
-          <Link href="/segunda-vuelta/onboarding">
+          <Link href="/estadisticas">
             <Button variant="brutal" size="lg" className="gap-2 px-8 py-6 text-lg">
-              Hacer test de segunda vuelta
+              Ver estadísticas
               <ArrowRight className="size-5" />
             </Button>
           </Link>

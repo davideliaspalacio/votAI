@@ -45,10 +45,10 @@ export function Header() {
             </Link>
           ))}
           <Link
-            href="/segunda-vuelta/onboarding"
+            href="/estadisticas"
             className="inline-flex items-center justify-center rounded-lg bg-primary px-3 py-1.5 text-sm font-bold text-primary-foreground shadow-brutal-sm transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal active:translate-x-0 active:translate-y-0 active:shadow-none"
           >
-            Empezar test
+            Ver estadísticas
           </Link>
         </nav>
 
@@ -92,11 +92,11 @@ export function Header() {
               {/* Separator + CTA */}
               <div className="mt-6 border-t border-surface-border pt-6 px-3">
                 <Link
-                  href="/segunda-vuelta/onboarding"
+                  href="/estadisticas"
                   onClick={() => setOpen(false)}
                   className="block rounded-brutal bg-primary px-4 py-3 text-center font-display font-bold text-primary-foreground shadow-brutal transition-all hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-brutal-hover active:translate-x-0 active:translate-y-0 active:shadow-none"
                 >
-                  Empezar test
+                  Ver estadísticas
                   <ArrowRight className="ml-2 inline-block size-4" />
                 </Link>
               </div>

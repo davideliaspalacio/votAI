@@ -119,8 +119,8 @@ export default async function CandidatePage({ params }: Props) {
           <Link href="/comparar">
             <Button variant="brutal">Comparar con otro candidato</Button>
           </Link>
-          <Link href="/segunda-vuelta/onboarding">
-            <Button variant="outline">Hacer el test</Button>
+          <Link href="/estadisticas">
+            <Button variant="outline">Ver estadísticas</Button>
           </Link>
         </div>
       </div>
