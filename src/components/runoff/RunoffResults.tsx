@@ -16,7 +16,7 @@ import { ResultsSkeleton } from "@/components/common/Skeletons"
 import { api } from "@/lib/api"
 import { mockCandidates } from "@/lib/mock/candidates"
 import type { RunoffMatchResult } from "@/types/domain"
-import { RefreshCw, User, Check, Ban } from "lucide-react"
+import { BarChart3, User, Check, Ban } from "lucide-react"
 
 interface RunoffResultsProps {
   sessionId: string
@@ -74,10 +74,11 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
             Sesión no encontrada
           </h2>
           <p className="mt-2 text-text-muted">
-            No pudimos encontrar tus resultados. ¿Quieres hacer el test de nuevo?
+            No pudimos encontrar tus resultados. El test ya cerró, pero puedes
+            explorar las estadísticas.
           </p>
-          <Link href="/segunda-vuelta/onboarding" className="mt-6 inline-block">
-            <Button variant="brutal">Empezar de nuevo</Button>
+          <Link href="/estadisticas" className="mt-6 inline-block">
+            <Button variant="brutal">Ver estadísticas</Button>
           </Link>
         </div>
       </div>
@@ -258,10 +259,10 @@ export function RunoffResults({ sessionId }: RunoffResultsProps) {
           <Disclaimer variant="full" />
 
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <Link href="/segunda-vuelta/onboarding">
+            <Link href="/estadisticas">
               <Button variant="outline" className="gap-2">
-                <RefreshCw className="size-4" />
-                Repetir test
+                <BarChart3 className="size-4" />
+                Ver estadísticas
               </Button>
             </Link>
           </div>

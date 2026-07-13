@@ -40,9 +40,9 @@ export function FirstRoundStatsHome() {
           predicen el resultado de la segunda vuelta.
         </div>
         <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
-          <Link href="/segunda-vuelta/onboarding">
+          <Link href="/estadisticas">
             <Button variant="brutal" size="lg" className="gap-2">
-              Haz tu test de segunda vuelta
+              Ver estadísticas de segunda vuelta
               <ArrowRight className="size-5" />
             </Button>
           </Link>

@@ -16,7 +16,7 @@ import { api } from "@/lib/api"
 import { mockCandidates } from "@/lib/mock/candidates"
 import type { MatchResult } from "@/types/domain"
 import { Header } from "@/components/common/Header"
-import { BarChart3, RefreshCw, GitCompare, User } from "lucide-react"
+import { BarChart3, GitCompare, User } from "lucide-react"
 import { showPublicStats } from "@/lib/utils"
 
 export default function ResultsPage() {
@@ -52,10 +52,11 @@ export default function ResultsPage() {
             Sesión no encontrada
           </h2>
           <p className="mt-2 text-text-muted">
-            No pudimos encontrar tus resultados. ¿Quieres hacer el test de nuevo?
+            No pudimos encontrar tus resultados. El test ya cerró, pero puedes
+            explorar las estadísticas.
           </p>
-          <Link href="/onboarding" className="mt-6 inline-block">
-            <Button variant="brutal">Empezar de nuevo</Button>
+          <Link href="/estadisticas" className="mt-6 inline-block">
+            <Button variant="brutal">Ver estadísticas</Button>
           </Link>
         </div>
       </div>
@@ -149,12 +150,6 @@ export default function ResultsPage() {
             <Disclaimer variant="full" />
 
             <div className="flex flex-wrap items-center justify-center gap-3">
-              <Link href="/onboarding">
-                <Button variant="outline" className="gap-2">
-                  <RefreshCw className="size-4" />
-                  Repetir test
-                </Button>
-              </Link>
               <Link href="/comparar">
                 <Button variant="outline" className="gap-2">
                   <GitCompare className="size-4" />

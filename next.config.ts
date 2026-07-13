@@ -2,7 +2,22 @@ import type { NextConfig } from "next"
 import { withSentryConfig } from "@sentry/nextjs"
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  async redirects() {
+    // El test cerró: todo el flujo (onboarding/quiz/analyzing) va a estadísticas.
+    // Quitar estas entradas si se reabre el test.
+    return [
+      "/onboarding",
+      "/quiz",
+      "/analyzing",
+      "/segunda-vuelta/onboarding",
+      "/segunda-vuelta/quiz",
+      "/segunda-vuelta/analyzing",
+    ].map((source) => ({
+      source,
+      destination: "/estadisticas",
+      permanent: false,
+    }))
+  },
 }
 
 export default withSentryConfig(nextConfig, {
